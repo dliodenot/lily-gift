@@ -1,17 +1,379 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
-  <meta charset="utf-8">
-  <title>Mon premier site</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Surprise 💖</title>
+  <style>
+    :root{
+      --bg1:#ffe6f2;
+      --bg2:#fff7fb;
+      --card:#ffffffcc;
+      --text:#1f1f1f;
+      --accent:#ff3d88;
+      --accent2:#7c3aed;
+      --shadow: 0 20px 60px rgba(0,0,0,.12);
+      --radius: 26px;
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      min-height:100vh;
+      display:grid;
+      place-items:center;
+      color:var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+      background:
+        radial-gradient(1200px 700px at 20% 15%, #ffd1e6 0%, transparent 55%),
+        radial-gradient(900px 600px at 85% 80%, #d7c7ff 0%, transparent 55%),
+        linear-gradient(135deg, var(--bg1), var(--bg2));
+      overflow:hidden;
+    }
+
+    /* petites bulles décoratives */
+    .blob{
+      position:absolute; inset:auto;
+      width:240px; height:240px;
+      filter: blur(0px);
+      opacity:.18;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, var(--accent), transparent 65%),
+                  radial-gradient(circle at 70% 70%, var(--accent2), transparent 60%);
+      animation: float 10s ease-in-out infinite;
+      pointer-events:none;
+    }
+    .blob.b1{ top:-60px; left:-60px; animation-duration: 12s; }
+    .blob.b2{ bottom:-80px; right:-80px; animation-duration: 14s; }
+
+    @keyframes float{
+      0%,100% { transform: translate(0,0) scale(1); }
+      50% { transform: translate(18px,-14px) scale(1.04); }
+    }
+
+    .wrap{
+      width:min(420px, 92vw);
+      padding: 18px;
+    }
+
+    .card{
+      position:relative;
+      padding: 22px 20px 18px;
+      border-radius: var(--radius);
+      background: var(--card);
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255,255,255,.65);
+      overflow:hidden;
+      transform: translateY(6px);
+      animation: pop .45s ease-out both;
+    }
+
+    @keyframes pop{
+      from { opacity:0; transform: translateY(16px) scale(.98); }
+      to   { opacity:1; transform: translateY(6px) scale(1); }
+    }
+
+    .top{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-bottom: 10px;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255, 61, 136, .12);
+      border: 1px solid rgba(255, 61, 136, .20);
+      font-weight: 700;
+      letter-spacing: .2px;
+    }
+
+    .heart{
+  --s: 0.65em;              /* taille du coeur = relative à la police */
+  width: var(--s);
+  height: var(--s);
+  display: inline-block;
+  flex: 0 0 auto;          /* jamais étiré */
+  position: relative;
+  background: var(--accent);
+  border-radius: calc(var(--s) * 0.25);
+  transform-origin: center;
+  will-change: transform;
+  transform: rotate(45deg) translateZ(0);
+  animation: beat 1.2s ease-in-out infinite;
+}
+
+.heart:before, .heart:after{
+  content:"";
+  position:absolute;
+  width: var(--s);
+  height: var(--s);
+  background: var(--accent);
+  border-radius: 50%;
+}
+
+.heart:before{ left: calc(var(--s) * -0.5); top: 0; }
+.heart:after { left: 0; top: calc(var(--s) * -0.5); }
+
+@keyframes beat{
+  0%,100% { transform: rotate(45deg) scale(1) translateZ(0); }
+  50%     { transform: rotate(45deg) scale(1.25) translateZ(0); }
+}
+
+    h1{
+      font-size: 20px;
+      margin: 0 0 8px;
+      line-height:1.2;
+    }
+
+    .subtitle{
+      margin:0 0 14px;
+      opacity:.75;
+      font-size: 13px;
+    }
+
+    .content{
+      margin-top: 10px;
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.65);
+      border: 1px solid rgba(0,0,0,.05);
+    }
+
+    .msg{
+      font-size: 18px;
+      line-height: 1.35;
+      margin: 0;
+    }
+
+    .img{
+      width: 100%;
+      border-radius: 16px;
+      display:block;
+      box-shadow: 0 10px 30px rgba(0,0,0,.10);
+    }
+
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      width:100%;
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      border: none;
+      cursor: pointer;
+      text-decoration:none;
+      font-weight: 800;
+      font-size: 15px;
+      color:white;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow: 0 14px 30px rgba(255,61,136,.25);
+      transition: transform .12s ease, filter .12s ease;
+    }
+    .btn:hover{ transform: translateY(-1px); filter: brightness(1.02); }
+    .btn:active{ transform: translateY(1px); }
+
+    .small{
+      margin: 12px 0 0;
+      font-size: 12px;
+      opacity: .65;
+      text-align:center;
+    }
+
+    /* petit ruban déco */
+    .ribbon{
+      position:absolute;
+      top: 14px; right: -42px;
+      transform: rotate(35deg);
+      background: rgba(124,58,237,.14);
+      border: 1px solid rgba(124,58,237,.20);
+      padding: 6px 56px;
+      font-weight: 800;
+      font-size: 12px;
+      color: #3b1a93;
+      z-index: 0;   /* décor */
+    }
+  </style>
 </head>
 <body>
-  <h1>Bonjour 👋</h1>
-  <button onclick="direBonjour()">Clique-moi</button>
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
 
-  <script>
-    function direBonjour() {
-      alert("Hello !");
+  <div class="wrap">
+    <div class="card" id="card">
+      <div class="ribbon">Pour Lily 💖</div>
+
+      <div class="top">
+        <span class="badge"><span class="heart"></span> Surprise du cœur</span>
+      </div>
+
+      <h1 id="title">Une petite surprise 💝</h1>
+      <p class="subtitle" id="subtitle">Ton porte-clé vient d’ouvrir une surprise 🎉</p>
+
+      <div class="content" id="content"></div>
+
+      <p class="small">la surprise change au fil des heures ✨</p>
+    </div>
+  </div>
+
+<script>
+  // 🔧 Personnalise ici (messages / images / liens)
+  const surprises = [
+    { type: "message", title:"Message secret 💖", value: "Si tu lis ça, c’est que je pense à toi 😊" },
+    { type: "message", title:"Mini pouvoir ✨", value: "Ce porte-clé donne des câlins illimités 🤗" },
+    { type: "message", title:"Petit rappel ⭐", value: "Tu es quelqu’un de vraiment chouette !" },
+
+    { type: "message", title:"Aujourd’hui 📆", value: "Un sourire pour toi 😊" },
+    { type: "message", title:"Message secret 💖", value: "Tu es géniale !!" },
+    { type: "message", title:"Petit rappel ⭐", value: "Tu comptes pour moi 💖" },
+    { type: "message", title:"Chance du jour 🍀", value: "⭐⭐⭐⭐⭐" },
+    { type: "message", title:"Attention ⚠️", value: "Câlin virtuel envoyé 🤗" },
+    { type: "message", title:"Petit rappel ⭐", value: "🏠 Peu importe où je suis, je pense à toi" },
+    { type: "message", title:"Petit rappel ⭐", value: "🌈 Merci d’être toujours là pour moi" },
+    { type: "message", title:"Attention ⚠️", value: "Ce cœur donne des câlins illimités" },
+    { type: "message", title:"Coupon 🍬", value: "1 sourire gratuit à vie" },
+    { type: "message", title:"Objet magique 🎁", value: "Le porte-clé rend heureux quand on le scanne" },
+    { type: "message", title:"Message secret 💖", value: "Tu comptes beaucoup pour moi" },
+    { type: "message", title:"Message secret 💖", value: "Si tu lis ça, c’est que tu es spéciale" },
+
+    { type: "message", title: "Message secret 💖", value: "Si tu lis ça, quelqu’un pense très fort à toi" },
+    { type: "message", title: "Petit sourire 😊", value: "Souris ! Ce message est pour toi" },
+    { type: "message", title: "Rappel ⭐", value: "Rappel important : tu es génial(e)" },
+    { type: "message", title: "Câlin 🤗", value: "Câlin virtuel envoyé avec succès" },
+    { type: "message", title: "Bonne journée 🌈", value: "Aujourd’hui va être une bonne journée" },
+    { type: "message", title: "Message secret 💫", value: "Message secret : tu comptes beaucoup pour moi" },
+    { type: "message", title: "Objet magique 🪄", value: "Objet magique : rend heureux quand on le scanne" },
+    { type: "message", title: "Amitié 💝", value: "Ce cœur est petit mais l’amitié est grande" },
+    { type: "message", title: "Douceur 🧸", value: "Ce message est doux, comme toi" },
+    { type: "message", title: "Merci 🌸", value: "Merci d’être toi" },
+    { type: "message", title: "Câlin 🤗", value: "Ce cœur t’envoie un énorme câlin" },
+    { type: "message", title: "Bonne humeur 😄", value: "Niveau de bonne humeur : +100" },
+    { type: "message", title: "Chance 🍀", value: "Chance du jour : ⭐⭐⭐⭐⭐" },
+    { type: "message", title: "Pensée 💕", value: "Quelqu’un quelque part t’apprécie beaucoup" },
+    { type: "message", title: "Vœu 🎈", value: "Ce message te souhaite une super journée" },
+    { type: "message", title: "Amitié 🫶", value: "Amitié activée" },
+    { type: "message", title: "Soleil ☀️", value: "Tu mets du soleil autour de toi" },
+    { type: "message", title: "Petit mot 🐣", value: "Petit message gentil, juste comme ça" },
+    { type: "message", title: "Message du cœur 💌", value: "Message du cœur, livré avec amour" },
+    { type: "message", title: "Étincelle ✨", value: "Tu rends le monde un peu plus chouette" },
+    { type: "message", title: "Cool 😎", value: "Tu es officiellement cool" },
+
+    // 🖼️ Mets l'URL d'une image hébergée (Drive/Dropbox/site…)
+    { type: "image", title:"Image surprise 🖼️", value: "https://placekitten.com/500/420" },
+
+    // 🔗 Lien vers musique / vidéo
+    { type: "link", title:"À écouter 🎵", label:"Ouvrir la musique", value:"https://www.youtube.com/watch?v=5qap5aO4i9A" },
+    { type: "link", title:"Petit moment 📺", label:"Ouvrir la vidéo", value:"https://www.youtube.com/watch?v=9bZkp7q19f0" }
+  ];
+
+  // 🎲 Choix aléatoire
+  // const item = surprises[Math.floor(Math.random() * surprises.length)];
+
+  // 🎲 Choix déterministe par heure
+  const idx = getHourlyIndex(surprises.length, new Date(), "mon-sel-secret-123");
+  const item = surprises[idx];
+
+  // 🎨 Injection
+  document.getElementById("title").textContent = item.title || "Surprise 💖";
+  const content = document.getElementById("content");
+
+  if(item.type === "message"){
+    content.innerHTML = `<p class="msg">${escapeHtml(item.value)}</p>`;
+  }
+  if(item.type === "image"){
+    content.innerHTML = `<img class="img" src="${item.value}" alt="Image surprise">`;
+  }
+  if(item.type === "link"){
+    content.innerHTML = `
+      <p class="msg">J’ai un truc pour toi 😄</p>
+      <a class="btn" href="${item.value}" target="_blank" rel="noopener">${escapeHtml(item.label || "Ouvrir")}</a>
+    `;
+  }
+
+  function escapeHtml(str){
+    return String(str).replace(/[&<>"']/g, s => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+    }[s]));
+  }
+
+  // --- Seeded PRNG helpers (déterministes) ---
+function xmur3(str) {
+  let h = 1779033703 ^ str.length;
+  for (let i = 0; i < str.length; i++) {
+    h = Math.imul(h ^ str.charCodeAt(i), 3432918353);
+    h = (h << 13) | (h >>> 19);
+  }
+  return function () {
+    h = Math.imul(h ^ (h >>> 16), 2246822507);
+    h = Math.imul(h ^ (h >>> 13), 3266489909);
+    return (h ^= h >>> 16) >>> 0;
+  };
+}
+
+function mulberry32(seed) {
+  return function () {
+    let t = (seed += 0x6D2B79F5);
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function hourBucket(date = new Date()) {
+  return Math.floor(date.getTime() / 3600000); // nb d'heures depuis 1970
+}
+
+function indexForHour(bucket, n, salt, attempt = 0) {
+  const seedFn = xmur3(`${salt}|${bucket}|${attempt}`);
+  const rng = mulberry32(seedFn());
+  return Math.floor(rng() * n);
+}
+
+/**
+ * Retourne un index:
+ * - constant sur l'heure courante
+ * - différent de l'index de l'heure précédente
+ * - et différent de (prev + 1) mod n (pour éviter l'effet "index+1")
+ */
+function getHourlyIndex(n, date = new Date(), salt = "change-me") {
+  if (!Number.isInteger(n) || n <= 0) throw new Error("n must be > 0");
+
+  const b = hourBucket(date);
+  const prev = (n === 1) ? 0 : indexForHour(b - 1, n, salt);
+
+  // Si n est petit, toutes les contraintes ne sont pas toujours possibles
+  // ex n=2 : éviter prev et prev+1(mod n) est impossible.
+  const forbidSet = new Set();
+  if (n >= 2) forbidSet.add(prev);               // pas égal
+  if (n >= 3) forbidSet.add((prev + 1) % n);     // pas prev+1
+
+  // Rejection sampling déterministe
+  for (let attempt = 0; attempt < 20; attempt++) {
+    const candidate = indexForHour(b, n, salt, attempt);
+    if (!forbidSet.has(candidate)) return candidate;
+  }
+
+  // Fallback (ultra rare) : relâcher la contrainte prev+1
+  if (n >= 2) {
+    for (let attempt = 0; attempt < 100; attempt++) {
+      const candidate = indexForHour(b, n, salt, attempt + 1000);
+      if (candidate !== prev) return candidate;
     }
-  </script>
+  }
+  return 0; // dernier recours
+}
+
+function dayBucket(date = new Date()) {
+  // nb de jours depuis 1970-01-01 (en UTC pour éviter les effets DST / changement d’heure)
+  return Math.floor(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) / 86400000);
+}
+</script>
 </body>
-</html>
+</html> 
