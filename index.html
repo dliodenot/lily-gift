@@ -396,33 +396,34 @@ const SALT = "mon-sel-secret-123";
 const specialSlots = [
     {
     date: "18-12-2025",
-    item: { type: "countdown", title: "Patience...", target: "2025-12-25T00:00:00", label: "Le père noël arrive ! 🎅🏼🎄" }
+    item: { type: "countdown", theme: "xmas", title: "Patience...", target: "2025-12-25T00:00:00", label: "Le père noël arrive ! 🎅🏼🎄" }
   },
   {
     date: "19-12-2025",
-    item: { type: "countdown", title: "Patience...", target: "2025-12-25T00:00:00", label: "Le père noël arrive ! 🎅🏼🎄" }
+    item: { type: "countdown", theme: "xmas", title: "Patience...", target: "2025-12-25T00:00:00", label: "Le père noël arrive ! 🎅🏼🎄" }
   },
   {
     date: "20-12-2025",
-    item: { type: "countdown", title: "Patience...", target: "2025-12-25T00:00:00", label: "Le père noël arrive ! 🎅🏼🎄" }
+    item: { type: "countdown", theme: "xmas", title: "Patience...", target: "2025-12-25T00:00:00", label: "Le père noël arrive ! 🎅🏼🎄" }
   },
   {
     date: "21-12-2025",
-    item: { type: "countdown", title: "Patience...", target: "2025-12-25T00:00:00", label: "Le père noël arrive ! 🎅🏼🎄" }
+    item: { type: "countdown", theme: "xmas", title: "Patience...", target: "2025-12-25T00:00:00", label: "Le père noël arrive ! 🎅🏼🎄" }
   },
   {
     date: "22-12-2025",
-    item: { type: "countdown", title: "Patience...", target: "2025-12-25T00:00:00", label: "Le père noël arrive ! 🎅🏼🎄" }
+    item: { type: "countdown", theme: "xmas", title: "Patience...", target: "2025-12-25T00:00:00", label: "Le père noël arrive ! 🎅🏼🎄" }
   },
   {
     date: "23-12-2025",
-    item: { type: "countdown", title: "Patience...", target: "2025-12-25T00:00:00", label: "Le père noël arrive ! 🎅🏼🎄" }
+    item: { type: "countdown", theme: "xmas", title: "Patience...", target: "2025-12-25T00:00:00", label: "Le père noël arrive ! 🎅🏼🎄" }
   },
   {
     date: "24-12-2025",
     start: "18:00",
     item: {
       type: "xmas",
+      theme: "xmas",
       title: "Soir de Noël 🎁",
       value: "La magie continue ce soir… ✨",
       image: "https://images.unsplash.com/photo-1543589077-47d81606c1bf?auto=format&fit=crop&w=800&q=80"
@@ -430,7 +431,7 @@ const specialSlots = [
   },
   {
     date: "24-12-2025",
-    item: { type: "countdown", title: "Encore un peu ⏳", target: "2025-12-25T00:00:00", label: "Le père noël arrive ! 🎅🏼🎄" }
+    item: { type: "countdown", theme: "xmas", title: "Encore un peu ⏳", target: "2025-12-25T00:00:00", label: "Le père noël arrive ! 🎅🏼🎄" }
   },
   {
     date: "31-12-2025",
@@ -1028,6 +1029,10 @@ function renderPage(item, now) {
   // reset états visuels
   document.body.classList.remove("xmas", "disco");
   UI.title.textContent = item.title || "Surprise 💖";
+
+  if (item && typeof item.theme === "string") {
+    document.body.classList.add(item.theme);
+  }
 
   const ribbonEl = document.getElementById("ribbon");
   if (ribbonEl) {
