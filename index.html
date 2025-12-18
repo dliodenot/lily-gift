@@ -429,12 +429,11 @@ const specialSlots = [
     }
   },
   {
-    date: "23-12-2025",
+    date: "24-12-2025",
     item: { type: "countdown", title: "Encore un peu ⏳", target: "2025-12-25T00:00:00", label: "Le père noël arrive ! 🎅🏼🎄" }
   },
   {
     date: "31-12-2025",
-    end: "23:59",
     item: {
       type: "countdown",
       title: "Compte à rebours 🎉",
@@ -1488,20 +1487,29 @@ function getIndexFromUrl(n) {
 }
 
 function getDateFromUrl() {
-  const params = new URLSearchParams(window.location.search);
+  const params = new URLSearchParams(location.search);
   const raw = params.get("date");
   if (!raw) return null;
 
-  // YYYY-MM-DD => on garde l'heure actuelle (Paris) pour tester "dans la journée"
-  if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
-    const nowParis = getParisDate();
-    const d = new Date(raw + "T00:00:00");
-    d.setHours(nowParis.getHours(), nowParis.getMinutes(), nowParis.getSeconds(), 0);
-    return d;
-  }
+  // 🎯 Format attendu : DD-MM-YYYY ou DD-MM-YYYYTHH:MM
+  const match = raw.match(
+    /^(\d{2})-(\d{2})-(\d{4})(?:T(\d{2}):(\d{2}))?$/
+  );
 
-  // YYYY-MM-DDTHH:mm...
-  const d = new Date(raw);
+  if (!match) return null;
+
+  const [, dd, mm, yyyy, hh = "00", min = "00"] = match;
+
+  // ⚠️ mois = mm - 1 en JS
+  const d = new Date(
+    Number(yyyy),
+    Number(mm) - 1,
+    Number(dd),
+    Number(hh),
+    Number(min),
+    0
+  );
+
   return isNaN(d.getTime()) ? null : d;
 }
 
