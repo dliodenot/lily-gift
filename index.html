@@ -394,29 +394,19 @@ const SALT = "mon-sel-secret-123";
  */
 
 const specialSlots = [
-    {
-    date: "18-12-2025",
-    item: { type: "countdown", theme: "xmas", title: "Patience...", target: "2025-12-25T00:00:00", label: "Le père noël arrive ! 🎅🏼🎄" }
-  },
-  {
-    date: "19-12-2025",
-    item: { type: "countdown", theme: "xmas", title: "Patience...", target: "2025-12-25T00:00:00", label: "Le père noël arrive ! 🎅🏼🎄" }
-  },
-  {
-    date: "20-12-2025",
-    item: { type: "countdown", theme: "xmas", title: "Patience...", target: "2025-12-25T00:00:00", label: "Le père noël arrive ! 🎅🏼🎄" }
-  },
-  {
-    date: "21-12-2025",
-    item: { type: "countdown", theme: "xmas", title: "Patience...", target: "2025-12-25T00:00:00", label: "Le père noël arrive ! 🎅🏼🎄" }
-  },
-  {
-    date: "22-12-2025",
-    item: { type: "countdown", theme: "xmas", title: "Patience...", target: "2025-12-25T00:00:00", label: "Le père noël arrive ! 🎅🏼🎄" }
-  },
   {
     date: "23-12-2025",
     item: { type: "countdown", theme: "xmas", title: "Patience...", target: "2025-12-25T00:00:00", label: "Le père noël arrive ! 🎅🏼🎄" }
+  },
+    {
+    date: "24-12-2025",
+    end: "18:00",
+    item: {
+      type: "message",
+      theme: "xmas",
+      title: "Porte-clé Magique",
+      value: "Trop cool !! Tu as découvert comment fonctionne le porte-clé ❤️. Rescane"
+    }
   },
   {
     date: "24-12-2025",
@@ -432,6 +422,35 @@ const specialSlots = [
   {
     date: "24-12-2025",
     item: { type: "countdown", theme: "xmas", title: "Encore un peu ⏳", target: "2025-12-25T00:00:00", label: "Le père noël arrive ! 🎅🏼🎄" }
+  },
+  {
+    date: "25-12-2025",
+    end: "08:00",
+    item: { 
+    type: "message", 
+    theme: "xmas", 
+    title: "Joyeux Noël 🎄", 
+    value: "Je te souhaite un Noël rempli de douceur, de sourires et de chaleur ❤️" }
+  },
+    {
+    date: "25-12-2025",
+    start: "08:00",
+    end: "08:59",
+    item: { 
+    type: "message", 
+    theme: "xmas", 
+    title: "Le père noël est passé !!??", 
+    value: "J'ai hâte qu'on s'appelle pour qu'on se montre nos cadeaux 🎁🎄" } 
+  },
+  {
+    date: "25-12-2025",
+    start: "09:00",
+    end: "12:00",
+    item: { 
+    type: "message", 
+    theme: "xmas", 
+    title: "Tu sais quoi ?",
+    value: "Mon meilleur cadeau de Noël c'est d'être avec toi ❤️🥰" } 
   },
   {
     date: "31-12-2025",
@@ -457,11 +476,6 @@ const specialSlots = [
  * Format clé: "JJ-MM-AAAA"
  */
 const specialDays = {
-  "25-12-2025": {
-    type: "message",
-    title: "Joyeux Noël 🎄",
-    value: "Je te souhaite un Noël rempli de douceur, de sourires et de chaleur ❤️"
-  }
 };
 
 // =======================
@@ -481,7 +495,7 @@ const SURPRISES_MESSAGES = [
   { type: "message", title: "Bonne journée 🌈", value: "Aujourd’hui va être une bonne journée" },
   { type: "message", title: "Message secret 💫", value: "Tu comptes beaucoup pour moi 💖" },
   { type: "message", title: "Objet magique 🪄", value: "Le porte-clé rend heureux quand on le scanne" },
-  { type: "message", title:"Coupon 🍬", value: "1 sourire gratuit à vie" },
+  { type: "message", title: "Coupon 🍬", value: "1 sourire gratuit à vie" },
   { type: "message", title: "Amitié 💝", value: "Ce cœur est petit mais l’amitié est grande" },
   { type: "message", title: "Douceur 🧸", value: "Ce message est doux, comme toi" },
   { type: "message", title: "Merci 🌸", value: "Merci d’être toi" },
@@ -490,7 +504,7 @@ const SURPRISES_MESSAGES = [
   { type: "message", title: "Chance 🍀", value: "Chance du jour : ⭐⭐⭐⭐⭐" },
   { type: "message", title: "Pensée 💕", value: "Quelqu’un quelque part t’apprécie beaucoup" },
   { type: "message", title: "Vœu 🎈", value: "Ce message te souhaite une super journée" },
-  { type: "message", title: "Amitié 🫶", value: "Toi + moi : activé ✨" },
+  { type: "message", title: "Amitié 🫶", value: "Toi + moi : activé ❤️" },
   { type: "message", title: "Soleil ☀️", value: "Tu mets du soleil autour de toi" },
   { type: "message", title: "Petit mot 🐣", value: "Petit message gentil, juste comme ça" },
   { type: "message", title: "Message du cœur 💌", value: "Message du cœur, livré avec amour" },
@@ -546,10 +560,6 @@ const SURPRISES_404 = [
 
 // 5) Messages affiché très tôt le matin
 const SURPRISES_MORNING = [
-    //{ type: "coffee-needed", title: "Avant café ☕", value: "Ce message fonctionne mieux après un café.", start: "05:30", end: "07:15"},
-  //{ type: "coffee-needed", title: "Avant café ☕", value: "Chargement du cerveau… 12 % ☕", start: "05:30", end: "07:15" },
-  //{ type: "coffee-needed", title: "Avant café ☕", value: "La caféine est requise pour continuer.", start: "05:30", end: "07:15" },
-  //{ type: "coffee-needed", title: "Avant café ☕", value: "Erreur : café non détecté.", start: "05:30", end: "07:15" },
   {
     type: "before-ready",
     title: "On se réveille 🥱",
@@ -661,7 +671,7 @@ const SURPRISES_CHOICE = [
     title: "Dis-moi 💭",
     question: "Là tout de suite, tu aurais plutôt besoin de…",
     choices: ["Un sourire", "Un moment calme", "Un peu de douceur"],
-    replies: ["Sourire envoyé 🙂", "Pause autorisée 😌", "Douceur livrée 🤍"]
+    replies: ["Sourire envoyé 🙂", "Pause autorisée 😌", "Douceur livrée ❤️"]
   },
   {
     type: "choice",
@@ -675,27 +685,27 @@ const SURPRISES_CHOICE = [
     title: "Petit check ✨",
     question: "Comment tu te sens, là maintenant ?",
     choices: ["Bien", "Un peu fatiguée", "Très bien"],
-    replies: ["Parfait alors 😊", "Repose-toi un peu 🤍", "J’adore cette énergie ✨"]
+    replies: ["Parfait alors 😊", "Repose-toi un peu ❤️", "J’adore cette énergie ✨"]
   },
   {
     type: "choice",
     title: "Très sérieux 🤔",
     question: "On est d’accord que…",
     choices: ["Tu es cool", "Tu es très cool", "Tu es extrêmement cool"],
-    replies: ["Fait établi.", "Confirmé.", "Validé scientifiquement 😎"]
+    replies: ["Ca c'est bien vrai.", "Confirmé.", "Validé scientifiquement 😎"]
   },
   {
     type: "choice",
-    title: "Entre nous 🤍",
+    title: "Entre nous ❤️",
     question: "Ce qui compte le plus, c’est…",
     choices: ["Être là", "Partager", "Rire ensemble"],
-    replies: ["Toujours 🤍", "C’est exactement ça ✨", "Et souvent 😄"]
+    replies: ["Toujours ❤️", "C’est exactement ça ✨", "Et souvent 😄"]
   },
   {
     type: "choice",
     title: "Petit rappel 💖",
     question: "Tu sais que…",
-    choices: ["Tu comptes", "Tu es importante", "Tu fais la différence"],
+    choices: ["Tu comptes", "Tu es importante", "Tu est la best"],
     replies: ["Toujours.", "Vraiment.", "Plus que tu ne le crois ✨"]
   }
 ];
@@ -727,9 +737,7 @@ const SURPRISES_FORTUNE = [
 // 9) Letters
 const SURPRISES_LETTERS = [
   { type: "letter", title: "Pour toi 💌", value: "Je ne sais pas toujours comment le dire, mais tu comptes énormément pour moi." },
-  { type: "letter", title: "À lire doucement 🌙", value: "Même quand tu doutes, tu avances. Et c’est déjà beaucoup." },
-  { type: "letter", title: "Petit rappel ⭐", value: "Tu fais de ton mieux. Et c’est suffisant." },
-  { type: "letter", title: "Mot discret 🤍", value: "Même sans raison particulière, tu mérites de la douceur." }
+  { type: "letter", title: "Mot discret ❤️", value: "Même sans raison particulière, tu mérites de la douceur." }
 ];
 
 // 10) Quotes
@@ -742,28 +750,21 @@ const SURPRISES_QUOTES = [
 // 11) Evolving + Counter
 const SURPRISES_PROGRESS = [
   { type: "evolving-message", title: "Message évolutif 🧪", key: "evolve-love-1", words: ["Je", "pense", "à", "toi", "💖"] },
-  { type: "evolving-message", title: "Complicité ✨", key: "evolve-complicity-1", words: ["C’est", "notre", "petit", "secret", "🤫"] },
   {
     type: "evolving-message",
-    title: "Toujours nous 🤍",
+    title: "Toujours nous ❤️",
     key: "evolve-us-1",
     words: ["Toi", "+", "Moi", "=", "Love"]
   },
   {
     type: "evolving-message",
-    title: "Toujours nous 🤍",
+    title: "Toujours nous ❤️",
     key: "evolve-letter-1",
     words: ["J", "E", "T", "A", "I", "M", "E"]
   },
 ];
 
-// 12) Countdown (avec label)
-const SURPRISES_COUNTDOWN = [
-  // { type: "countdown", title: "Encore un peu ⏳", target: "2025-12-25T00:00:00", label: "Avant Noël 🎄" },
-  // { type: "countdown", title: "Compte à rebours 🎉", target: "2026-01-01T00:00:00", label: "Avant la nouvelle année" }
-];
-
-// 13) Quiz
+// 12) Quiz
 const SURPRISES_QUIZ = [
   {
     type: "quiz",
@@ -772,21 +773,16 @@ const SURPRISES_QUIZ = [
       {
         text: "Quel est mon super-pouvoir secret ?",
         choices: ["Faire rire", "Cuisiner", "Dormir partout", "Tout à la fois"],
-        correctIndex: 3
+        correctIndex: 0
       },
       {
         text: "Quelle surprise me fait le plus plaisir ?",
         choices: ["Un câlin", "Un dîner", "Un voyage", "Une playlist"],
         correctIndex: 0
       },
-      {
-        text: "On fête quoi en premier ?",
-        choices: ["Noël", "Ton anniversaire", "Un vendredi", "Tout !"],
-        correctIndex: 3
-      }
     ],
     results: [
-      { min: 0, title: "Team chill 😄", message: "On a un style bien à nous. J’adore." },
+      { min: 1, title: "Team chill 😄", message: "On a un style bien à nous. J’adore." },
       { min: 2, title: "Team cœur 💖", message: "Tu me connais (trop) bien 😳✨" }
     ]
   },
@@ -805,14 +801,14 @@ const SURPRISES_QUIZ = [
         correctIndex: 1
       },
       {
-        text: "J’oublie parfois où j’ai posé mes clés 😅",
+        text: "J’oublie parfois où j’ai posé mon téléphone 😅",
         choices: ["Vrai", "Faux"],
         correctIndex: 0
       },
       {
         text: "Je suis du matin et toujours plein d’énergie ☀️",
         choices: ["Vrai", "Faux"],
-        correctIndex: 1
+        correctIndex: 0
       },
       {
         text: "Je peux regarder le même film plusieurs fois 🎬",
@@ -822,7 +818,7 @@ const SURPRISES_QUIZ = [
       {
         text: "Je suis très fort pour raconter des blagues nulles 🤡",
         choices: ["Vrai", "Faux"],
-        correctIndex: 0
+        correctIndex: 1
       },
       {
         text: "Je range toujours parfaitement mes affaires 🧹",
@@ -840,7 +836,7 @@ const SURPRISES_QUIZ = [
         correctIndex: 1
       },
       {
-        text: "J’adore les surprises (surtout celles-ci 😄)",
+        text: "J’adore avoir des cadeaux",
         choices: ["Vrai", "Faux"],
         correctIndex: 0
       }
@@ -865,7 +861,7 @@ const SURPRISES_QUIZ = [
   }
 ];
 
-// 14) Farfelus
+// 13) Farfelus
 const SURPRISES_FUN = [
   {
     type: "mindread",
@@ -873,10 +869,10 @@ const SURPRISES_FUN = [
     steps: [
       "Pense à quelqu’un…",
       "Ne dis rien…",
-      "Oui. C’est bien cette personne 🤍"
+      "Oui. C’est bien cette personne ❤️"
     ]
   },
-  { type: "magic8", title: "Boule magique 🎱", question: "Pose une question (dans ta tête)…", answers: ["Oui, clairement", "Redemande plus tard", "Les étoiles disent oui ✨", "Hmm… non 😅", "C’est un grand OUI 💖"] },
+  { type: "magic8", title: "Boule magique 🎱", question: "Pose une question (dans ta tête)…", answers: ["Oui, clairement", "Redemande plus tard", "Les étoiles disent oui ✨", "Hmm… non 😅", "C’est un grand OUI 💖", "NON, pas du tout!"] },
   { type: "potion", title: "Potion 🧃", name: "Potion de bonne humeur", effects: ["+5 sourires", "+2 énergie", "+∞ câlins (virtuel)"] },
   { type: "teleport", title: "Prêt pour l’aventure ? 🚀", places: ["Bali 🌴", "Vietnam 🇻🇳", "Ton lit 🛌", "A la plage 🏖️", "Mars 🚀", "Un spa 🧖‍♀️", "Disneyland 🎢", "Près de moi 😅"] },
   { type: "animal-emoji", title: "Animal Emoji !" },
@@ -915,14 +911,14 @@ const SURPRISES_FUN = [
   { type: "disco", title: "Mode disco 🪩", duration: 25000, value: "OK… petite fête privée 😄" }
 ];
 
-// 15) Images / liens
+// 14) Images / liens
 const SURPRISES_MEDIA = [
-  { type: "image", title:"Image surprise 🖼️", value: "https://cataas.com/cat?width=500&height=420" },
-  { type: "image", title:"Image surprise 🖼️", value: "https://cataas.com/cat/says/Wesh?width=500&height=420" },
-  { type: "image", title:"Image surprise 🖼️", value: "https://cataas.com/cat/cute?width=500&height=420" },
-  { type: "image", title: "Image surprise 🖼️", value: "https://picsum.photos/500/420" },
-  { type: "link", title: "À écouter 🎵", label: "Ouvrir la musique", value: "https://www.youtube.com/watch?v=5qap5aO4i9A" },
-  { type: "link", title: "Petit moment 📺", label: "Ouvrir la vidéo", value: "https://www.youtube.com/watch?v=9bZkp7q19f0" }
+  { type: "image", title:"Image surprise 🖼️", value: "https://cataas.com/cat/?width=500&height=420" },
+  { type: "image", title:"Chat ch'est une surprise 😸", value: "https://cataas.com/cat/cute?width=500&height=420" },
+    { type: "image", title:"Chat ch'est une surprise 😸", value: "https://cataas.com/cat/says/Joyeux noël !!?width=500&height=420" },
+  //{ type: "image", title: "Image surprise 🖼️", value: "https://picsum.photos/500/420" },
+  { type: "link", title: "À écouter 🎵", label: "Ouvrir la musique", value: "https://music.apple.com/fr/album/melodrama/1840188173?i=1840188177" },
+  { type: "link", title: "Petit moment 📺", label: "Ouvrir la vidéo", value: "https://www.youtube.com/watch?v=fCWvZisydrE" }
 ];
 
 // =======================
@@ -946,7 +942,6 @@ const surprises = [
   ...SURPRISES_QUOTES,
 
   ...SURPRISES_PROGRESS,
-  ...SURPRISES_COUNTDOWN,
 
   ...SURPRISES_QUIZ,
   ...SURPRISES_FUN
@@ -1533,8 +1528,8 @@ function isWithinWindow(now, start, end) {
   const endMin = timeToMinutes(end);
 
   // gère les fenêtres qui passent minuit (ex: 22:00 -> 02:00)
-  if (startMin <= endMin) return nowMin >= startMin && nowMin <= endMin;
-  return nowMin >= startMin || nowMin <= endMin;
+  if (startMin <= endMin) return nowMin >= startMin && nowMin < endMin;
+  return nowMin >= startMin || nowMin < endMin;
 }
 
 function isTimed(item) {
@@ -1568,8 +1563,8 @@ function parseHM(hm, fallback) {
 }
 
 function inOptionalWindow(nowMin, startMin, endMin) {
-  if (startMin <= endMin) return nowMin >= startMin && nowMin <= endMin;
-  return nowMin >= startMin || nowMin <= endMin; // passe minuit
+  if (startMin <= endMin) return nowMin >= startMin && nowMin < endMin;
+  return nowMin >= startMin || nowMin < endMin; // passe minuit
 }
 
 /* ==========================================================
