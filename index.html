@@ -364,6 +364,11 @@
   <div class="blob b2"></div>
   <div class="snow" aria-hidden="true"></div>
 
+  <!-- Dev warning -->
+  <div id="dev-warning" style="display:none;position:fixed;top:0;left:0;right:0;z-index:9999;background:#ff3d88;color:#fff;padding:10px 0;text-align:center;font-weight:700;letter-spacing:.5px;font-size:14px;box-shadow:0 2px 12px rgba(0,0,0,.08);">
+    ⚠️ Mode développement actif – Ne pas partager ce lien publiquement.
+  </div>
+
   <div class="wrap">
     <div class="card" id="card">
       <div class="ribbon" id="ribbon">Pour Lily 💖</div>
@@ -386,6 +391,41 @@
 
 // ⚙️ Sel pour le choix "par heure"
 const SALT = "mon-sel-secret-123";
+// =============== DEV MODE HELPERS ===============
+function isDev() {
+  return (
+    /localhost|127\.0\.0\.1/.test(location.hostname) ||
+    location.search.includes("dev") ||
+    location.hash.includes("dev")
+  );
+}
+
+function ensureDevBanner() {
+  if (!isDev()) return;
+  const el = document.getElementById("dev-warning");
+  if (el) el.style.display = "block";
+}
+
+function ensureDevOverlay() {
+  if (!isDev()) return null;
+  let el = document.getElementById("dev-overlay");
+  if (!el) {
+    el = document.createElement("div");
+    el.id = "dev-overlay";
+    el.style.cssText = "position:fixed;bottom:6px;left:6px;right:6px;z-index:9999;font-size:11px;opacity:.65;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;pointer-events:none;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap";
+    document.body.appendChild(el);
+  }
+  return el;
+}
+
+function setDevOverlayText(parts) {
+  const el = ensureDevOverlay();
+  if (!el) return;
+  el.innerHTML = (parts || [])
+    .filter(Boolean)
+    .map(t => `<span style=\"background:rgba(255,255,255,.75);border:1px solid rgba(0,0,0,.06);border-radius:10px;padding:6px 8px;\">${escapeHtml(t)}</span>`)
+    .join("");
+}
 
 /**
  * Créneaux spéciaux (date exacte, heures optionnelles).
@@ -395,13 +435,16 @@ const SALT = "mon-sel-secret-123";
 
 const specialSlots = [
   {
+    key: "slot-2025-12-23-countdown",
     date: "23-12-2025",
-    item: { type: "countdown", theme: "xmas", title: "Patience...", target: "2025-12-25T00:00:00", label: "Le père noël arrive ! 🎅🏼🎄" }
+    item: { key: "countdown-xmas-2025", type: "countdown", theme: "xmas", title: "Patience...", target: "2025-12-25T00:00:00", label: "Le père noël arrive ! 🎅🏼🎄" }
   },
-    {
+  {
+    key: "slot-2025-12-24-before-17",
     date: "24-12-2025",
     end: "17:00",
     item: {
+      key: "msg-xmas-discovery",
       type: "message",
       theme: "xmas",
       title: "Porte-clé Magique",
@@ -409,10 +452,12 @@ const specialSlots = [
     }
   },
   {
+    key: "slot-2025-12-24-17-19",
     date: "24-12-2025",
     start: "17:00",
     end: "19:00",
     item: {
+      key: "xmas-evening-magic",
       type: "xmas",
       theme: "xmas",
       title: "Soir de Noël 🎁",
@@ -421,42 +466,54 @@ const specialSlots = [
     }
   },
   {
+    key: "slot-2025-12-24-after-19",
     date: "24-12-2025",
     start: "19:00",
-    item: { type: "countdown", theme: "xmas", title: "Encore un peu ⏳", target: "2025-12-25T00:00:00", label: "Le père noël arrive ! 🎅🏼🎄" }
+    item: { key: "countdown-xmas-eve", type: "countdown", theme: "xmas", title: "Encore un peu ⏳", target: "2025-12-25T00:00:00", label: "Le père noël arrive ! 🎅🏼🎄" }
   },
   {
+    key: "slot-2025-12-25-before-08",
     date: "25-12-2025",
     end: "08:00",
     item: {
-    type: "message",
-    theme: "xmas",
-    title: "Joyeux Noël 🎄",
-    value: "Je te souhaite un Noël rempli de douceur, de sourires et de chaleur ❤️" }
+      key: "msg-xmas-morning",
+      type: "message",
+      theme: "xmas",
+      title: "Joyeux Noël 🎄",
+      value: "Joyeux Noël Lily 🎄🎅🏼 ! J’espère qu’il sera rempli de surprises, de sourires et de fun !"
+    }
   },
-    {
+  {
+    key: "slot-2025-12-25-08-09",
     date: "25-12-2025",
     start: "08:00",
     end: "09:00",
     item: {
-    type: "message",
-    theme: "xmas",
-    title: "Le père noël est passé !!??",
-    value: "J'ai hâte qu'on s'appelle pour qu'on se montre nos cadeaux 🎁🎄" }
+      key: "msg-xmas-calls",
+      type: "message",
+      theme: "xmas",
+      title: "Le père noël est passé !!??",
+      value: "J'ai hâte qu'on s'appelle pour qu'on se montre nos cadeaux 🎁🎄"
+    }
   },
   {
+    key: "slot-2025-12-25-09-12",
     date: "25-12-2025",
     start: "09:00",
     end: "12:00",
     item: {
-    type: "message",
-    theme: "xmas",
-    title: "Tu sais quoi ?",
-    value: "Mon meilleur cadeau de Noël c'est d'être avec toi ❤️🥰" }
+      key: "msg-xmas-best-gift",
+      type: "message",
+      theme: "xmas",
+      title: "Tu sais quoi ?",
+      value: "Mon meilleur cadeau de Noël c'est d'être avec toi ❤️🥰"
+    }
   },
   {
+    key: "slot-2025-12-31-countdown",
     date: "31-12-2025",
     item: {
+      key: "countdown-new-year-2026",
       type: "countdown",
       title: "Compte à rebours 🎉",
       target: "2026-01-01T00:00:00",
@@ -464,8 +521,10 @@ const specialSlots = [
     }
   },
   {
+    key: "slot-2026-04-16-birthday",
     date: "16-04-2026",
     item: {
+      key: "msg-birthday-lily",
       type: "message",
       title: "Joyeux anniversaire 🎂",
       value: "Aujourd’hui, c’est ta journée ✨ Profite à fond 💖"
@@ -486,143 +545,154 @@ const specialDays = {
 
 // 1) Messages (simples)
 const SURPRISES_MESSAGES = [
-  { type: "message", title: "Message secret 💖", value: "Si tu lis ça, c’est que je pense à toi 😊" },
-  { type: "message", title: "Mini pouvoir ✨", value: "Ce porte-clé donne des câlins illimités 🤗" },
-  { type: "message", title: "Aujourd’hui 📆", value: "Un sourire pour toi 😊" },
-  { type: "message", title: "Petit sourire 😊", value: "Souris ! Ce message est pour toi" },
-  { type: "message", title: "Petit rappel ⭐", value: "Tu es quelqu’un de vraiment chouette !" },
-  { type: "message", title: "Petit rappel ⭐", value: "🏠 Peu importe où je suis, je pense à toi" },
-  { type: "message", title: "Rappel ⭐", value: "Rappel important : tu es géniale" },
-  { type: "message", title: "Câlin 🤗", value: "Câlin virtuel envoyé avec succès 🤗" },
-  { type: "message", title: "Bonne journée 🌈", value: "Aujourd’hui va être une bonne journée" },
-  { type: "message", title: "Message secret 💫", value: "Tu comptes beaucoup pour moi 💖" },
-  { type: "message", title: "Objet magique 🪄", value: "Le porte-clé rend heureux quand on le scanne" },
-  { type: "message", title: "Coupon 🍬", value: "1 sourire gratuit à vie" },
-  { type: "message", title: "Amitié 💝", value: "Ce cœur est petit mais l’amitié est grande" },
-  { type: "message", title: "Douceur 🧸", value: "Ce message est doux, comme toi" },
-  { type: "message", title: "Merci 🌸", value: "Merci d’être toi" },
-  { type: "message", title: "Petit rappel ⭐", value: "🌈 Merci d’être toujours là pour moi" },
-  { type: "message", title: "Bonne humeur 😄", value: "Niveau de bonne humeur : +100" },
-  { type: "message", title: "Chance 🍀", value: "Chance du jour : ⭐⭐⭐⭐⭐" },
-  { type: "message", title: "Pensée 💕", value: "Quelqu’un quelque part t’apprécie beaucoup" },
-  { type: "message", title: "Vœu 🎈", value: "Ce message te souhaite une super journée" },
-  { type: "message", title: "Amitié 🫶", value: "Toi + moi : activé ❤️" },
-  { type: "message", title: "Soleil ☀️", value: "Tu mets du soleil autour de toi" },
-  { type: "message", title: "Petit mot 🐣", value: "Petit message gentil, juste comme ça" },
-  { type: "message", title: "Message du cœur 💌", value: "Message du cœur, livré avec amour" },
-  { type: "message", title: "Étincelle ✨", value: "Tu rends le monde un peu plus chouette" },
-  { type: "message", title: "Cool 😎", value: "Tu es officiellement cool" },
-  { type: "message", title: "Message secret 💖", value: "Si tu lis ça, c’est que tu es spéciale" },
-  { type: "message", title: "Bonne journée 🌈", value: "Aujourd’hui va être une bonne journée" },
-  { type: "message", title: "Amitié 💝", value: "Ce cœur est petit mais ce qu'on partage est grand" },
-  { type: "message", title: "Câlin 🤗", value: "Ce cœur t’envoie un énorme câlin" }
+  { key: "msg-1", type: "message", title: "Message secret 💖", value: "Si tu lis ça, c’est que je pense à toi 😊" },
+  { key: "msg-2", type: "message", title: "Mini pouvoir ✨", value: "Ce porte-clé donne des câlins illimités 🤗" },
+  { key: "msg-3", type: "message", title: "Aujourd’hui 📆", value: "Un sourire pour toi 😊" },
+  { key: "msg-4", type: "message", title: "Petit sourire 😊", value: "Souris ! Ce message est pour toi" },
+  { key: "msg-5", type: "message", title: "Petit rappel ⭐", value: "Tu es quelqu’un de vraiment chouette !" },
+  { key: "msg-6", type: "message", title: "Petit rappel ⭐", value: "🏠 Peu importe où je suis, je pense à toi" },
+  { key: "msg-7", type: "message", title: "Rappel ⭐", value: "Rappel important : tu es géniale" },
+  { key: "msg-8", type: "message", title: "Câlin 🤗", value: "Câlin virtuel envoyé avec succès 🤗" },
+  { key: "msg-9", type: "message", title: "Bonne journée 🌈", value: "Aujourd’hui va être une bonne journée" },
+  { key: "msg-10", type: "message", title: "Message secret 💫", value: "Tu comptes beaucoup pour moi 💖" },
+  { key: "msg-11", type: "message", title: "Objet magique 🪄", value: "Le porte-clé rend heureux quand on le scanne" },
+  { key: "msg-12", type: "message", title: "Coupon 🍬", value: "1 sourire gratuit à vie" },
+  { key: "msg-13", type: "message", title: "Amitié 💝", value: "Ce cœur est petit mais l’amitié est grande" },
+  { key: "msg-14", type: "message", title: "Douceur 🧸", value: "Ce message est doux, comme toi" },
+  { key: "msg-15", type: "message", title: "Merci 🌸", value: "Merci d’être toi" },
+  { key: "msg-16", type: "message", title: "Petit rappel ⭐", value: "🌈 Merci d’être toujours là pour moi" },
+  { key: "msg-17", type: "message", title: "Bonne humeur 😄", value: "Niveau de bonne humeur : +100" },
+  { key: "msg-18", type: "message", title: "Chance 🍀", value: "Chance du jour : ⭐⭐⭐⭐⭐" },
+  { key: "msg-19", type: "message", title: "Pensée 💕", value: "Quelqu’un quelque part t’apprécie beaucoup" },
+  { key: "msg-20", type: "message", title: "Vœu 🎈", value: "Ce message te souhaite une super journée" },
+  { key: "msg-21", type: "message", title: "Amitié 🫶", value: "Toi + moi : activé ❤️" },
+  { key: "msg-22", type: "message", title: "Soleil ☀️", value: "Tu mets du soleil autour de toi" },
+  { key: "msg-23", type: "message", title: "Petit mot 🐣", value: "Petit message gentil, juste comme ça" },
+  { key: "msg-24", type: "message", title: "Message du cœur 💌", value: "Message du cœur, livré avec amour" },
+  { key: "msg-25", type: "message", title: "Étincelle ✨", value: "Tu rends le monde un peu plus chouette" },
+  { key: "msg-26", type: "message", title: "Cool 😎", value: "Tu es officiellement cool" },
+  { key: "msg-27", type: "message", title: "Message secret 💖", value: "Si tu lis ça, c’est que tu es spéciale" },
+  { key: "msg-28", type: "message", title: "Bonne journée 🌈", value: "Aujourd’hui va être une bonne journée" },
+  { key: "msg-29", type: "message", title: "Amitié 💝", value: "Ce cœur est petit mais ce qu'on partage est grand" },
+  { key: "msg-30", type: "message", title: "Câlin 🤗", value: "Ce cœur t’envoie un énorme câlin" }
 ];
 
 // 2) Useless facts
 const SURPRISES_USELESS_FACTS = [
-  { type: "useless-fact", title: "Fait inutile 🦦", value: "Les loutres se tiennent la main pour dormir." },
-  { type: "useless-fact", title: "Fait inutile 🐢", value: "Les tortues peuvent respirer par leurs fesses." },
-  { type: "useless-fact", title: "Fait inutile 🍌", value: "Les bananes sont des baies, mais les fraises non." },
-  { type: "useless-fact", title: "Fait inutile 🐙", value: "Les pieuvres ont trois cœurs." },
-  { type: "useless-fact", title: "Fait inutile 🐧", value: "Les pingouins ont des genoux, mais ils sont cachés." },
-  { type: "useless-fact", title: "Fait inutile 🧠", value: "Ton cerveau consomme environ 20 % de ton énergie." },
-  { type: "useless-fact", title: "Fait inutile 🐄", value: "Les vaches ont des meilleurs amis et stressent quand ils sont séparés." },
-  { type: "useless-fact", title: "Fait inutile 🐝", value: "Les abeilles peuvent reconnaître des visages humains." },
-  { type: "useless-fact", title: "Fait inutile 🌍", value: "La Terre n’est pas parfaitement ronde." },
-  { type: "useless-fact", title: "Fait inutile 🦑", value: "Les calmars ont du sang bleu." }
+  { key: "fact-1", type: "useless-fact", title: "Fait inutile 🦦", value: "Les loutres se tiennent la main pour dormir." },
+  { key: "fact-2", type: "useless-fact", title: "Fait inutile 🐢", value: "Les tortues peuvent respirer par leurs fesses." },
+  { key: "fact-3", type: "useless-fact", title: "Fait inutile 🍌", value: "Les bananes sont des baies, mais les fraises non." },
+  { key: "fact-4", type: "useless-fact", title: "Fait inutile 🐙", value: "Les pieuvres ont trois cœurs." },
+  { key: "fact-5", type: "useless-fact", title: "Fait inutile 🐧", value: "Les pingouins ont des genoux, mais ils sont cachés." },
+  { key: "fact-6", type: "useless-fact", title: "Fait inutile 🧠", value: "Ton cerveau consomme environ 20 % de ton énergie." },
+  { key: "fact-7", type: "useless-fact", title: "Fait inutile 🐄", value: "Les vaches ont des meilleurs amis et stressent quand ils sont séparés." },
+  { key: "fact-8", type: "useless-fact", title: "Fait inutile 🐝", value: "Les abeilles peuvent reconnaître des visages humains." },
+  { key: "fact-9", type: "useless-fact", title: "Fait inutile 🌍", value: "La Terre n’est pas parfaitement ronde." },
+  { key: "fact-10", type: "useless-fact", title: "Fait inutile 🦑", value: "Les calmars ont du sang bleu." }
 ];
 
 // 3) Self-aware (méta)
 const SURPRISES_SELF_AWARE = [
-  { type: "self-aware", title: "Message conscient 🪞", value: "Ce message sait qu’il ne sert à rien. Et il est très à l’aise avec ça." },
-  { type: "self-aware", title: "Message conscient 🪞", value: "Ce message est parfaitement inutile. Mais il est bien présenté." },
-  { type: "self-aware", title: "Message conscient 🪞", value: "Ce message existe uniquement parce que quelqu’un a scanné un porte-clé." },
-  { type: "self-aware", title: "Message conscient 🪞", value: "Ce message se regarde être lu. C’est un peu gênant." },
-  { type: "self-aware", title: "Message conscient 🪞", value: "Ce message n’a aucun but précis, et c’est voulu." },
-  { type: "self-aware", title: "Message conscient 🪞", value: "Ce message est conscient d’être un message. Rien de plus." },
-  { type: "self-aware", title: "Message conscient 🪞", value: "Ce message est en train de prendre ton attention pendant quelques secondes." },
-  { type: "self-aware", title: "Message conscient 🪞", value: "Ce message sait qu’il sera oublié. Et ça lui va." },
-  { type: "self-aware", title: "Message conscient 🪞", value: "Ce message ne change rien à ta journée. Sauf peut-être ça." },
-  { type: "self-aware", title: "Message conscient 🪞", value: "Ce message sait très bien qu’il aurait pu être autre chose." }
+  { key: "meta-1", type: "self-aware", title: "Message conscient 🪞", value: "Ce message sait qu’il ne sert à rien. Et il est très à l’aise avec ça." },
+  { key: "meta-2", type: "self-aware", title: "Message conscient 🪞", value: "Ce message est parfaitement inutile. Mais il est bien présenté." },
+  { key: "meta-3", type: "self-aware", title: "Message conscient 🪞", value: "Ce message existe uniquement parce que quelqu’un a scanné un porte-clé." },
+  { key: "meta-4", type: "self-aware", title: "Message conscient 🪞", value: "Ce message se regarde être lu. C’est un peu gênant." },
+  { key: "meta-5", type: "self-aware", title: "Message conscient 🪞", value: "Ce message n’a aucun but précis, et c’est voulu." },
+  { key: "meta-6", type: "self-aware", title: "Message conscient 🪞", value: "Ce message est conscient d’être un message. Rien de plus." },
+  { key: "meta-7", type: "self-aware", title: "Message conscient 🪞", value: "Ce message est en train de prendre ton attention pendant quelques secondes." },
+  { key: "meta-8", type: "self-aware", title: "Message conscient 🪞", value: "Ce message sait qu’il sera oublié. Et ça lui va." },
+  { key: "meta-9", type: "self-aware", title: "Message conscient 🪞", value: "Ce message ne change rien à ta journée. Sauf peut-être ça." },
+  { key: "meta-10", type: "self-aware", title: "Message conscient 🪞", value: "Ce message sait très bien qu’il aurait pu être autre chose." }
 ];
 
 // 4) 404
 const SURPRISES_404 = [
-  { type: "404", title: "Erreur 404", value: "Surprise introuvable… enfin si 😄" },
-  { type: "404", title: "Erreur 404", value: "Cette surprise n’existe pas. Ou peut-être que si." },
-  { type: "404", title: "Erreur 404", value: "Rien à voir ici. Enfin… presque." },
-  { type: "404", title: "Erreur 404", value: "Tu n’étais pas censé voir ça. Mais bon, tant pis." },
-  { type: "404", title: "Erreur 404", value: "Surprise absente. Essaye d’imaginer quelque chose de cool." },
-  { type: "404", title: "Erreur 404", value: "Erreur détectée. Bonne nouvelle : ce n’est pas grave." },
-  { type: "404", title: "Erreur 404", value: "Contenu manquant, mais intention présente." },
-  { type: "404", title: "Erreur 404", value: "Ce message fait semblant d’être une erreur." },
-  { type: "404", title: "Erreur 404", value: "Il n’y avait rien ici. Maintenant si." },
-  { type: "404", title: "Erreur 404", value: "Ceci est un message d’erreur qui ne sert à rien." }
+  { key: "err-404-1", type: "404", title: "Erreur 404", value: "Surprise introuvable… enfin si 😄" },
+  { key: "err-404-2", type: "404", title: "Erreur 404", value: "Cette surprise n’existe pas. Ou peut-être que si." },
+  { key: "err-404-3", type: "404", title: "Erreur 404", value: "Rien à voir ici. Enfin… presque." },
+  { key: "err-404-4", type: "404", title: "Erreur 404", value: "Tu n’étais pas censé voir ça. Mais bon, tant pis." },
+  { key: "err-404-5", type: "404", title: "Erreur 404", value: "Surprise absente. Essaye d’imaginer quelque chose de cool." },
+  { key: "err-404-6", type: "404", title: "Erreur 404", value: "Erreur détectée. Bonne nouvelle : ce n’est pas grave." },
+  { key: "err-404-7", type: "404", title: "Erreur 404", value: "Contenu manquant, mais intention présente." },
+  { key: "err-404-8", type: "404", title: "Erreur 404", value: "Ce message fait semblant d’être une erreur." },
+  { key: "err-404-9", type: "404", title: "Erreur 404", value: "Il n’y avait rien ici. Maintenant si." },
+  { key: "err-404-10", type: "404", title: "Erreur 404", value: "Ceci est un message d’erreur qui ne sert à rien." }
 ];
 
 // 5) Messages affiché très tôt le matin
 const SURPRISES_MORNING = [
   {
+    key: "morning-1",
     type: "before-ready",
     title: "On se réveille 🥱",
     value: "Ce message fonctionne mieux après un réveil complet 😄",
     start: "05:30", end: "07:15"
   },
   {
+    key: "morning-2",
     type: "before-ready",
     title: "On se réveille 🥱",
     value: "Chargement du cerveau… 12 % 🧠",
     start: "05:30", end: "07:15"
   },
   {
+    key: "morning-3",
     type: "before-ready",
     title: "On se réveille 🥱",
     value: "Encore un peu endormie…",
     start: "05:30", end: "07:15"
   },
   {
+    key: "morning-4",
     type: "before-ready",
     title: "On se réveille 🥱",
     value: "Mode démarrage lent activé 🐢",
     start: "05:30", end: "07:15"
   },
   {
+    key: "morning-5",
     type: "sleepy-mode",
     title: "Mode dodo 😴",
     value: "Ce message arrive un peu trop tôt.",
     start: "05:30", end: "07:15"
   },
   {
+    key: "morning-6",
     type: "sleepy-mode",
     title: "Mode dodo 😴",
     value: "Les yeux sont ouverts. Le cerveau pas encore.",
     start: "05:30", end: "07:15"
   },
   {
+    key: "morning-7",
     type: "sleepy-mode",
     title: "Mode dodo 😴",
     value: "Redémarrage en cours…",
     start: "05:30", end: "07:15"
   },
   {
+    key: "morning-8",
     type: "sleepy-mode",
     title: "Mode dodo 😴",
     value: "Encore besoin de quelques minutes.",
     start: "05:30", end: "07:15"
   },
   {
+    key: "morning-9",
     type: "loading",
     title: "Chargement… 🎮",
     value: "Merci de patienter ⏳",
     start: "05:30", end: "07:15"
   },
   {
+    key: "morning-10",
     type: "loading",
     title: "Chargement… 🎮",
     value: "Presque prête…",
     start: "05:30", end: "07:15"
   },
   {
+    key: "morning-11",
     type: "loading",
     title: "Chargement… 🎮",
     value: "Connexion au cerveau réussie 🧠",
@@ -632,27 +702,27 @@ const SURPRISES_MORNING = [
 
 // 6) Nuit
 const SURPRISES_NIGHT = [
-  { type: "night-whisper",
+  { key: "night-1", type: "night-whisper",
     title: "Chuchotement 🌙",
     value: "Chut… il est tard. Je voulais juste te dire bonne nuit.",
     start: "22:00", end: "03:00"
   },
-  { type: "night-whisper",
+  { key: "night-2", type: "night-whisper",
     title: "Chuchotement 🌙",
     value: "La journée est finie. Repose-toi, tu l’as mérité ✨",
     start: "22:00", end: "03:00"
   },
-  { type: "night-whisper",
+  { key: "night-3", type: "night-whisper",
     title: "Chuchotement 🌙",
     value: "Même dans le silence, quelqu’un pense à toi.",
     start: "22:00", end: "03:00"
   },
-  { type: "night-whisper",
+  { key: "night-4", type: "night-whisper",
     title: "Chuchotement 🌙",
     value: "Pose le téléphone. Respire. Tout va bien.",
     start: "22:00", end: "03:00"
   },
-  { type: "night-whisper",
+  { key: "night-5", type: "night-whisper",
     title: "Chuchotement 🌙",
     value: "Pourquoi tu es réveillée? Il faut dormir...",
     start: "22:00", end: "05:30"
@@ -662,6 +732,7 @@ const SURPRISES_NIGHT = [
 // 7) Choice
 const SURPRISES_CHOICE = [
   {
+    key: "choice-1",
     type: "choice",
     title: "Dis-moi ✨",
     question: "Là tout de suite, tu as plutôt envie de…",
@@ -669,6 +740,7 @@ const SURPRISES_CHOICE = [
     replies: ["Câlin virtuel envoyé 💕", "Tu es vraiment incroyable ✨", "Surprise débloquée 🎉"]
   },
   {
+    key: "choice-2",
     type: "choice",
     title: "Dis-moi 💭",
     question: "Là tout de suite, tu aurais plutôt besoin de…",
@@ -676,6 +748,7 @@ const SURPRISES_CHOICE = [
     replies: ["Sourire envoyé 🙂", "Pause autorisée 😌", "Douceur livrée ❤️"]
   },
   {
+    key: "choice-3",
     type: "choice",
     title: "Choix rapide ⚡",
     question: "Plutôt…",
@@ -683,6 +756,7 @@ const SURPRISES_CHOICE = [
     replies: ["Ça se tient.", "Très bon instinct.", "Équilibre parfait ✨"]
   },
   {
+    key: "choice-4",
     type: "choice",
     title: "Petit check ✨",
     question: "Comment tu te sens, là maintenant ?",
@@ -690,6 +764,7 @@ const SURPRISES_CHOICE = [
     replies: ["Parfait alors 😊", "Repose-toi un peu ❤️", "J’adore cette énergie ✨"]
   },
   {
+    key: "choice-5",
     type: "choice",
     title: "Très sérieux 🤔",
     question: "On est d’accord que…",
@@ -697,6 +772,7 @@ const SURPRISES_CHOICE = [
     replies: ["Ca c'est bien vrai.", "Confirmé.", "Validé scientifiquement 😎"]
   },
   {
+    key: "choice-6",
     type: "choice",
     title: "Entre nous ❤️",
     question: "Ce qui compte le plus, c’est…",
@@ -704,6 +780,7 @@ const SURPRISES_CHOICE = [
     replies: ["Toujours ❤️", "C’est exactement ça ✨", "Et souvent 😄"]
   },
   {
+    key: "choice-7",
     type: "choice",
     title: "Petit rappel 💖",
     question: "Tu sais que…",
@@ -715,6 +792,7 @@ const SURPRISES_CHOICE = [
 // 8) Fortune
 const SURPRISES_FORTUNE = [
   {
+    key: "fortune-1",
     type: "fortune",
     title: "Prédiction 🔮",
     values: [
@@ -725,6 +803,7 @@ const SURPRISES_FORTUNE = [
     ]
   },
   {
+    key: "fortune-2",
     type: "fortune",
     title: "Oracle du jour ✨",
     values: [
@@ -738,15 +817,15 @@ const SURPRISES_FORTUNE = [
 
 // 9) Letters
 const SURPRISES_LETTERS = [
-  { type: "letter", title: "Pour toi 💌", value: "Je ne sais pas toujours comment le dire, mais tu comptes énormément pour moi." },
-  { type: "letter", title: "Mot discret ❤️", value: "Même sans raison particulière, tu mérites de la douceur." }
+  { key: "letter-1", type: "letter", title: "Pour toi 💌", value: "Je ne sais pas toujours comment le dire, mais tu comptes énormément pour moi." },
+  { key: "letter-2", type: "letter", title: "Mot discret ❤️", value: "Même sans raison particulière, tu mérites de la douceur." }
 ];
 
 // 10) Quotes
 const SURPRISES_QUOTES = [
-  { type: "quote", title: "Citation ⭐", value: "Les petites attentions font les grandes journées.", author: "Anonyme" },
-  { type: "quote", title: "Citation ⭐", value: "La douceur est une force discrète.", author: "Anonyme" },
-  { type: "quote", title: "Citation ⭐", value: "Parfois, ralentir est déjà avancer.", author: "Anonyme" }
+  { key: "quote-1", type: "quote", title: "Citation ⭐", value: "Les petites attentions font les grandes journées.", author: "Anonyme" },
+  { key: "quote-2", type: "quote", title: "Citation ⭐", value: "La douceur est une force discrète.", author: "Anonyme" },
+  { key: "quote-3", type: "quote", title: "Citation ⭐", value: "Parfois, ralentir est déjà avancer.", author: "Anonyme" }
 ];
 
 // 11) Evolving + Counter
@@ -769,6 +848,7 @@ const SURPRISES_PROGRESS = [
 // 12) Quiz
 const SURPRISES_QUIZ = [
   {
+    key: "quiz-1",
     type: "quiz",
     title: "Petit quiz 🎯",
     questions: [
@@ -789,6 +869,7 @@ const SURPRISES_QUIZ = [
     ]
   },
   {
+    key: "quiz-2",
     type: "quiz",
     title: "Vrai ou faux ? Sur moi 🤔",
     questions: [
@@ -866,6 +947,7 @@ const SURPRISES_QUIZ = [
 // 13) Farfelus
 const SURPRISES_FUN = [
   {
+    key: "fun-mindread-1",
     type: "mindread",
     title: "Connexion ✨",
     steps: [
@@ -874,11 +956,25 @@ const SURPRISES_FUN = [
       "Oui. C’est bien cette personne ❤️"
     ]
   },
-  { type: "magic8", title: "Boule magique 🎱", question: "Pose une question (dans ta tête)…", answers: ["Oui, clairement", "Redemande plus tard", "Les étoiles disent oui ✨", "Hmm… non 😅", "C’est un grand OUI 💖", "NON, pas du tout!"] },
-  { type: "potion", title: "Potion 🧃", name: "Potion de bonne humeur", effects: ["+5 sourires", "+2 énergie", "+∞ câlins (virtuel)"] },
-  { type: "teleport", title: "Prêt pour l’aventure ? 🚀", places: ["Bali 🌴", "Vietnam 🇻🇳", "Ton lit 🛌", "A la plage 🏖️", "Mars 🚀", "Un spa 🧖‍♀️", "Disneyland 🎢", "Près de moi 😅"] },
-  { type: "animal-emoji", title: "Animal Emoji !" },
-  { type: "random-thought",
+  {
+    key: "fun-magic8-1",
+    type: "magic8", title: "Boule magique 🎱", question: "Pose une question (dans ta tête)…", answers: ["Oui, clairement", "Redemande plus tard", "Les étoiles disent oui ✨", "Hmm… non 😅", "C’est un grand OUI 💖", "NON, pas du tout!"]
+  },
+  {
+    key: "fun-potion-1",
+    type: "potion", title: "Potion 🧃", name: "Potion de bonne humeur", effects: ["+5 sourires", "+2 énergie", "+∞ câlins (virtuel)"]
+  },
+  {
+    key: "fun-teleport-1",
+    type: "teleport", title: "Prêt pour l’aventure ? 🚀", places: ["Bali 🌴", "Vietnam 🇻🇳", "Ton lit 🛌", "A la plage 🏖️", "Mars 🚀", "Un spa 🧖‍♀️", "Disneyland 🎢", "Près de moi 😅"]
+  },
+  {
+    key: "fun-animal-emoji-1",
+    type: "animal-emoji", title: "Animal Emoji !"
+  },
+  {
+    key: "fun-random-thought-1",
+    type: "random-thought",
     title: "Pensée random 💭",
     values: [
       // 🐣 Fun / légères
@@ -909,18 +1005,24 @@ const SURPRISES_FUN = [
       "Cette phrase existe juste pour exister."
     ]
   },
-  { type: "glitch", title: "Glitch 🧠", value: "Réalité instable…" },
-  { type: "disco", title: "Mode disco 🪩", duration: 25000, value: "OK… petite fête privée 😄" }
+  {
+    key: "fun-glitch-1",
+    type: "glitch", title: "Glitch 🧠", value: "Réalité instable…"
+  },
+  {
+    key: "fun-disco-1",
+    type: "disco", title: "Mode disco 🪩", duration: 25000, value: "OK… petite fête privée 😄"
+  }
 ];
 
 // 14) Images / liens
 const SURPRISES_MEDIA = [
-  { type: "image", title:"Image surprise 🖼️", value: "https://cataas.com/cat/?width=500&height=420" },
-  { type: "image", title:"Chat ch'est une surprise 😸", value: "https://cataas.com/cat/cute?width=500&height=420" },
-    { type: "image", title:"Chat ch'est une surprise 😸", value: "https://cataas.com/cat/says/Joyeux noël !!?width=500&height=420" },
+  { key: "media-1", type: "image", title:"Image surprise 🖼️", value: "https://cataas.com/cat/?width=500&height=420" },
+  { key: "media-2", type: "image", title:"Chat ch'est une surprise 😸", value: "https://cataas.com/cat/cute?width=500&height=420" },
+  { key: "media-3", type: "image", title:"Chat ch'est une surprise 😸", value: "https://cataas.com/cat/says/Joyeux noël !!?width=500&height=420" },
   //{ type: "image", title: "Image surprise 🖼️", value: "https://picsum.photos/500/420" },
-  { type: "link", title: "À écouter 🎵", label: "Ouvrir la musique", value: "https://music.apple.com/fr/album/melodrama/1840188173?i=1840188177" },
-  { type: "link", title: "Petit moment 📺", label: "Ouvrir la vidéo", value: "https://www.youtube.com/watch?v=fCWvZisydrE" }
+  { key: "media-4", type: "link", title: "À écouter 🎵", label: "Ouvrir la musique", value: "https://music.apple.com/fr/album/melodrama/1840188173?i=1840188177" },
+  { key: "media-5", type: "link", title: "Petit moment 📺", label: "Ouvrir la vidéo", value: "https://www.youtube.com/watch?v=fCWvZisydrE" }
 ];
 
 // =======================
@@ -997,8 +1099,28 @@ function getActiveSurprises(surprises, now) {
   );
 }
 
+const HISTORY_KEY = "recentSurpriseKeys";
+const HISTORY_SIZE = 24; // évite les 6 derniers
+
+function getHistory() {
+    try {
+        const v = JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
+        return Array.isArray(v) ? v : [];
+    } catch {
+        return [];
+    }
+}
+
+function saveToHistory(key) {
+    if (!key) return;
+    const h = getHistory().filter(k => k !== key);
+    h.unshift(key);
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(h.slice(0, HISTORY_SIZE)));
+}
+
 function init() {
   const now = getNow();
+  ensureDevBanner();
   console.log(formatDDMMYYYY(now), `${pad2(now.getHours())}:${pad2(now.getMinutes())}`);
 
   const activeSurprises = getActiveSurprises(surprises, now);
@@ -1006,7 +1128,17 @@ function init() {
     getSpecialSlotItem(now) ||
     getSpecialDayItem(now) ||
     getItemFromUrl(activeSurprises) ||
-    getHourlyItem(activeSurprises, now, SALT);
+    (() => {
+        const p = pickHourlyWeightedNoRepeat(activeSurprises, now, SALT);
+        if (p?.key) saveToHistory(p.key);
+        return p;
+    })();
+
+  if (isDev()) {
+    const slot = getSpecialSlotDebug(now);
+    console.log("DEV slot actif:", slot ? slot.key : "aucun");
+    if (!item || !item.key) console.warn("⚠️ Surprise sans key :", item);
+  }
 
   renderPage(item, now);
 }
@@ -1017,9 +1149,109 @@ init();
    3) SELECTION
 ========================================================== */
 
-function getItemFromUrl(list) {
-  const idx = getIndexFromUrl(list.length);
-  return (idx !== null) ? list[idx] : null;
+// ---- Weighted + No-repeat (stable per hour) ----
+const TYPE_WEIGHTS = {
+    "message": 6,
+    "useless-fact": 2,
+    "animal-emoji": 1,
+    "random-thought": 1,
+    "choice": 2,
+    "quiz": 2,
+    "evolving-message": 3,
+    "fortune": 2,
+    "teleport": 2,
+    "xmas": 1,
+    "countdown": 0.5,
+    "image": 3,
+    "link": 1,
+    "self-aware": 0.8,
+    "night-whisper": 0.8,
+    "404": 0.3,
+    "letter": 2,
+    "quote": 1
+};
+
+function weightOf(item) {
+    const typeW = (TYPE_WEIGHTS[item.type] ?? 1);
+    const itemW = (typeof item.weight === "number") ? item.weight : 1;
+    return Math.max(0.001, typeW * itemW);
+}
+
+function hourSeedKey(now, salt) {
+    return `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}-${now.getHours()}|${salt}`;
+}
+
+function scoreForItem(item, seedBase) {
+    // random déterministe par item (indépendant de l'ordre du tableau)
+    const rand = mulberry32(hashString(seedBase + "|" + item.key));
+    const u = Math.max(1e-9, rand());
+    const w = weightOf(item);
+    // Plus w est grand, plus l'item gagne souvent
+    return Math.pow(u, 1 / w);
+}
+
+function pickHourlyWeightedNoRepeat(items, now, salt) {
+    if (!items || items.length === 0) return null;
+
+    const seedBase = hourSeedKey(now, salt);
+    const recent = getHistory();
+
+    let best = null;
+    let bestScore = -Infinity;
+
+    // 1) On évite l'historique
+    for (const it of items) {
+        if (!it || !it.key) continue;
+        if (recent.includes(it.key)) continue;
+        const score = scoreForItem(it, seedBase);
+        if (score > bestScore) {
+            bestScore = score;
+            best = it;
+        }
+    }
+
+    // 2) Si tout est bloqué (peu d'items), on relâche la contrainte
+    if (!best) {
+        for (const it of items) {
+            if (!it || !it.key) continue;
+            const score = scoreForItem(it, seedBase);
+            if (score > bestScore) {
+                bestScore = score;
+                best = it;
+            }
+        }
+    }
+
+    return best;
+}
+
+function getKeyFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const raw = params.get("key");
+  if (!raw) return null;
+  const k = raw.trim();
+  return k ? k : null;
+}
+
+function getItemFromUrl(activeList) {
+  // ✅ Priorité au paramètre ?key= (plus stable que ?i=)
+  const k = getKeyFromUrl();
+  if (k) {
+    // On cherche dans toutes les sources possibles
+    const pool = [
+      ...specialSlots.map(s => s.item),
+      ...Object.values(specialDays || {}),
+      ...surprises
+    ].filter(Boolean);
+
+    const found = pool.find(it => it && it.key === k) || null;
+    if (!found && isDev()) console.warn("⚠️ key inconnue dans l'URL :", k);
+    return found;
+  }
+
+  // Fallback historique : ?i=
+  const idx = getIndexFromUrl(activeList.length);
+  return (idx !== null) ? activeList[idx] : null;
 }
 
 function getHourlyItem(list, now, salt) {
@@ -1043,6 +1275,16 @@ function renderPage(item, now) {
   const ribbonEl = document.getElementById("ribbon");
   if (ribbonEl) {
     ribbonEl.textContent = getRibbonText(item, now);
+  }
+
+  if (isDev()) {
+    const slot = getSpecialSlotDebug(now);
+    setDevOverlayText([
+      `now: ${formatDDMMYYYY(now)} ${pad2(now.getHours())}:${pad2(now.getMinutes())}`,
+      item?.key ? `item: ${item.key}` : "item: (no key)",
+      slot?.key ? `slot: ${slot.key}` : "slot: (none)",
+      `history: ${getHistory().length}/${HISTORY_SIZE}`
+    ]);
   }
 
   renderItem(item, UI.content, now);
@@ -1428,6 +1670,21 @@ function getSpecialSlotItem(date) {
   return null;
 }
 
+function getSpecialSlotDebug(date) {
+  const key = formatDDMMYYYY(date);
+  const nowMin = minutesOfDay(date);
+
+  for (const s of specialSlots) {
+    if (s.date !== key) continue;
+
+    const startMin = parseHM(s.start, 0);
+    const endMin   = parseHM(s.end, 1439);
+
+    if (inOptionalWindow(nowMin, startMin, endMin)) return s;
+  }
+  return null;
+}
+
 function randomAnimalEmoji() {
   const ANIMAL_EMOJIS = [
     "🐶","🐱","🐭","🐹","🐰","🦊","🐻","🐼","🐨","🐯",
@@ -1601,6 +1858,16 @@ function inOptionalWindow(nowMin, startMin, endMin) {
 /* ==========================================================
    9) HOURLY INDEX (seeded)
 ========================================================== */
+
+// Hash simple et stable (FNV-1a 32-bit) : string -> number
+function hashString(str) {
+    let h = 2166136261;
+    for (let i = 0; i < str.length; i++) {
+    h ^= str.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+    }
+    return h >>> 0;
+}
 
 function xmur3(str) {
   let h = 1779033703 ^ str.length;
