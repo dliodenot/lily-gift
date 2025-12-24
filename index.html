@@ -299,6 +299,36 @@
     }
 
     /* =========================
+     Effets (quiz image)
+    ========================== */
+    .grid-choices {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 12px;
+    }
+
+    .choice-img {
+    border: 2px solid transparent;
+    border-radius: 12px;
+    padding: 6px;
+    background: #fff;
+    }
+
+    .choice-img img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 8px;
+    }
+
+    .choice-img span {
+    display: block;
+    margin-top: 6px;
+    font-size: 14px;
+    }
+
+    /* =========================
        Noël (neige)
     ========================== */
     .snow{ position: fixed; inset: 0; pointer-events:none; z-index:1; }
@@ -442,20 +472,20 @@ const specialSlots = [
   {
     key: "slot-2025-12-24-before-17",
     date: "24-12-2025",
-    end: "17:00",
+    end: "18:00",
     item: {
       key: "msg-xmas-discovery",
       type: "message",
       theme: "xmas",
       title: "Porte-clé Magique",
-      value: "Trop cool !! Tu as découvert comment fonctionne le porte-clé ❤️🔓. Tu pourras réessayer vers 17h puis 19h. A partir de demain, il te montrera encore plus de nouvelles choses... 😊"
+      value: "Trop cool !! Tu as découvert comment fonctionne le porte-clé ❤️🔓. Tu pourras réessayer vers 18h puis 20h. A partir de demain, il te montrera encore plus de nouvelles choses... 😊"
     }
   },
   {
     key: "slot-2025-12-24-17-19",
     date: "24-12-2025",
-    start: "17:00",
-    end: "19:00",
+    start: "18:00",
+    end: "20:00",
     item: {
       key: "xmas-evening-magic",
       type: "xmas",
@@ -468,7 +498,7 @@ const specialSlots = [
   {
     key: "slot-2025-12-24-after-19",
     date: "24-12-2025",
-    start: "19:00",
+    start: "20:00",
     item: { key: "countdown-xmas-eve", type: "countdown", theme: "xmas", title: "Encore un peu ⏳", target: "2025-12-25T00:00:00", label: "Le père noël arrive ! 🎅🏼🎄" }
   },
   {
@@ -859,7 +889,7 @@ const SURPRISES_QUIZ = [
       },
       {
         text: "Quelle surprise me fait le plus plaisir ?",
-        choices: ["Un câlin", "Un dîner", "Un voyage", "Une playlist"],
+        choices: ["Un câlin de toi", "Un dîner", "Un voyage", "Une playlist"],
         correctIndex: 0
       },
     ],
@@ -1155,6 +1185,7 @@ const TYPE_WEIGHTS = {
     "random-thought": 1,
     "choice": 2,
     "quiz": 2,
+    "quiz-images": 1,
     "evolving-message": 3,
     "fortune": 2,
     "teleport": 2,
@@ -1166,7 +1197,8 @@ const TYPE_WEIGHTS = {
     "night-whisper": 0.5,
     "404": 0.2,
     "letter": 2,
-    "quote": 1
+    "quote": 1,
+    "story": 1
 };
 
 function weightOf(item) {
@@ -1316,6 +1348,37 @@ function renderItem(item, content, now) {
 
     case "quiz":
       renderQuiz(item, content);
+      return;
+
+    case "quiz-images": {
+    const q = item.questions[0];
+
+    content.innerHTML = `
+      <p class="msg">${escapeHtml(q.question)}</p>
+      <div class="grid-choices">
+        ${q.choices.map((c, i) => `
+          <button class="choice-img" data-correct="${!!c.correct}">
+            <img src="${c.img}" alt="">
+            <span>${escapeHtml(c.label)}</span>
+          </button>
+        `).join("")}
+      </div>
+      <p class="small" id="quizResult"></p>
+    `;
+
+    content.querySelectorAll(".choice-img").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const ok = btn.dataset.correct === "true";
+        content.querySelector("#quizResult").textContent =
+          ok ? "Bravo 🎉 Bonne réponse !" : "Presque 😄";
+      });
+    });
+
+    return;
+    }
+
+    case "story":
+      renderStory(item, content, now);
       return;
 
     case "mindread":
@@ -1651,6 +1714,99 @@ function renderCountdown(item, content) {
   update();
   window.countdownInterval = setInterval(update, 1000);
 }
+
+    function renderStory(item, content, effectiveDate) {
+      const nodes = item.nodes || {};
+      const startId = item.startNode || item.start || "start";
+
+      if (!nodes || typeof nodes !== "object" || !nodes[startId]) {
+        content.innerHTML = `<p class="msg">Histoire invalide 😅</p>`;
+        return;
+      }
+
+      // Progress par jour (pour éviter de rester bloqué sur une vieille partie)
+      const y = effectiveDate.getFullYear();
+      const m = String(effectiveDate.getMonth() + 1).padStart(2, "0");
+      const d = String(effectiveDate.getDate()).padStart(2, "0");
+      const dayKey = `${y}-${m}-${d}`;
+
+      const storageKey = `story@${item.key || "story"}@${dayKey}`;
+
+      const loadNodeId = () => {
+        const saved = localStorage.getItem(storageKey);
+        if (saved && nodes[saved]) return saved;
+        return startId;
+      };
+
+      const saveNodeId = (id) => {
+        if (!id) return;
+        localStorage.setItem(storageKey, id);
+      };
+
+      const reset = () => {
+        localStorage.removeItem(storageKey);
+        renderNode(startId);
+      };
+
+      const renderNode = (nodeId) => {
+        const node = nodes[nodeId];
+        if (!node) {
+          content.innerHTML = `<p class="msg">Oups… la suite est introuvable 😅</p>`;
+          content.innerHTML += `<button class="btn" type="button" id="storyRestart">Recommencer</button>`;
+          content.querySelector("#storyRestart").addEventListener("click", reset);
+          return;
+        }
+
+        // Fin
+        if (typeof node.end === "string") {
+          content.innerHTML = `
+            <p class="msg">${escapeHtml(node.end)}</p>
+            <button class="btn" type="button" id="storyRestart">Recommencer 🔁</button>
+            <p class="small">Fin de l'histoire ✨</p>
+          `;
+          content.querySelector("#storyRestart").addEventListener("click", reset);
+          return;
+        }
+
+        const choices = Array.isArray(node.choices) ? node.choices : [];
+
+        content.innerHTML = `
+          <p class="msg">${escapeHtml(node.text || "")}</p>
+          <div id="storyChoices"></div>
+          <button class="btn" type="button" id="storyRestart" style="margin-top:14px;">Recommencer 🔁</button>
+        `;
+
+        const wrap = content.querySelector("#storyChoices");
+
+        // Si aucun choix, on propose juste recommencer
+        if (choices.length === 0) {
+          const p = document.createElement("p");
+          p.className = "small";
+          p.textContent = "(Pas de choix ici… c’est bizarre 😅)";
+          wrap.appendChild(p);
+        } else {
+          choices.forEach((c) => {
+            const b = document.createElement("button");
+            b.className = "quiz-btn";
+            b.type = "button";
+            b.textContent = c.label || "Choisir";
+            b.addEventListener("click", () => {
+              const next = c.next;
+              if (!next) return;
+              saveNodeId(next);
+              renderNode(next);
+            });
+            wrap.appendChild(b);
+          });
+        }
+
+        content.querySelector("#storyRestart").addEventListener("click", reset);
+      };
+
+      // Start
+      const nodeId = loadNodeId();
+      renderNode(nodeId);
+    }
 
 /* ==========================================================
    5) SPECIAL DAYS / SLOTS
