@@ -448,7 +448,7 @@ const specialSlots = [
       type: "message",
       theme: "xmas",
       title: "Porte-clé Magique",
-      value: "Trop cool !! Tu as découvert comment fonctionne le porte-clé ❤️🔓. A partir de demain, il te montrera de nouvelles choses... 😊"
+      value: "Trop cool !! Tu as découvert comment fonctionne le porte-clé ❤️🔓. Tu pourras réessayer vers 17h puis 19h. A partir de demain, il te montrera encore plus de nouvelles choses... 😊"
     }
   },
   {
@@ -479,8 +479,8 @@ const specialSlots = [
       key: "msg-xmas-morning",
       type: "message",
       theme: "xmas",
-      title: "Joyeux Noël 🎄",
-      value: "Joyeux Noël Lily 🎄🎅🏼 ! J’espère qu’il sera rempli de surprises, de sourires et de fun !"
+      title: "Joyeux Noël Lily 🎄🎅🏼",
+      value: "J’espère que ce jour sera rempli de surprises, de sourires et de fun !"
     }
   },
   {
@@ -557,15 +557,15 @@ const SURPRISES_MESSAGES = [
   { key: "msg-10", type: "message", title: "Message secret 💫", value: "Tu comptes beaucoup pour moi 💖" },
   { key: "msg-11", type: "message", title: "Objet magique 🪄", value: "Le porte-clé rend heureux quand on le scanne" },
   { key: "msg-12", type: "message", title: "Coupon 🍬", value: "1 sourire gratuit à vie" },
-  { key: "msg-13", type: "message", title: "Amitié 💝", value: "Ce cœur est petit mais l’amitié est grande" },
-  { key: "msg-14", type: "message", title: "Douceur 🧸", value: "Ce message est doux, comme toi" },
-  { key: "msg-15", type: "message", title: "Merci 🌸", value: "Merci d’être toi" },
+  { key: "msg-13", type: "message", title: "Amour 💝", value: "Ce cœur est petit mais l’amour est grand" },
+  { key: "msg-14", type: "message", title: "Amour 💝", value: "Ce cœur est petit mais ce qu'on partage est grand" },
+  { key: "msg-15", type: "message", title: "Douceur 🧸", value: "Ce message est doux, comme toi" },
   { key: "msg-16", type: "message", title: "Petit rappel ⭐", value: "🌈 Merci d’être toujours là pour moi" },
   { key: "msg-17", type: "message", title: "Bonne humeur 😄", value: "Niveau de bonne humeur : +100" },
   { key: "msg-18", type: "message", title: "Chance 🍀", value: "Chance du jour : ⭐⭐⭐⭐⭐" },
   { key: "msg-19", type: "message", title: "Pensée 💕", value: "Quelqu’un quelque part t’apprécie beaucoup" },
   { key: "msg-20", type: "message", title: "Vœu 🎈", value: "Ce message te souhaite une super journée" },
-  { key: "msg-21", type: "message", title: "Amitié 🫶", value: "Toi + moi : activé ❤️" },
+  { key: "msg-21", type: "message", title: "Amour 🫶", value: "Toi + moi : activé ❤️" },
   { key: "msg-22", type: "message", title: "Soleil ☀️", value: "Tu mets du soleil autour de toi" },
   { key: "msg-23", type: "message", title: "Petit mot 🐣", value: "Petit message gentil, juste comme ça" },
   { key: "msg-24", type: "message", title: "Message du cœur 💌", value: "Message du cœur, livré avec amour" },
@@ -573,7 +573,7 @@ const SURPRISES_MESSAGES = [
   { key: "msg-26", type: "message", title: "Cool 😎", value: "Tu es officiellement cool" },
   { key: "msg-27", type: "message", title: "Message secret 💖", value: "Si tu lis ça, c’est que tu es spéciale" },
   { key: "msg-28", type: "message", title: "Bonne journée 🌈", value: "Aujourd’hui va être une bonne journée" },
-  { key: "msg-29", type: "message", title: "Amitié 💝", value: "Ce cœur est petit mais ce qu'on partage est grand" },
+  { key: "msg-29", type: "message", title: "Merci 🌸", value: "Merci d’être toi" },
   { key: "msg-30", type: "message", title: "Câlin 🤗", value: "Ce cœur t’envoie un énorme câlin" }
 ];
 
@@ -1051,10 +1051,6 @@ const surprises = [
   ...SURPRISES_FUN
 ];
 
-/* ==========================================================
-   2) INIT
-========================================================== */
-
 const UI = {
   title: document.getElementById("title"),
   subtitle: document.getElementById("subtitle"),
@@ -1100,7 +1096,9 @@ function getActiveSurprises(surprises, now) {
 }
 
 const HISTORY_KEY = "recentSurpriseKeys";
-const HISTORY_SIZE = 24; // évite les 6 derniers
+const HISTORY_SIZE = 24; // évite les 24 derniers (≈ 24h)
+const PICK_CACHE_PREFIX = "pick@"; // cache du tirage par heure
+const HISTORY_HOUR_KEY = "historyLastHour"; // évite d'ajouter au reload
 
 function getHistory() {
     try {
@@ -1118,40 +1116,40 @@ function saveToHistory(key) {
     localStorage.setItem(HISTORY_KEY, JSON.stringify(h.slice(0, HISTORY_SIZE)));
 }
 
-function init() {
-  const now = getNow();
-  ensureDevBanner();
-  console.log(formatDDMMYYYY(now), `${pad2(now.getHours())}:${pad2(now.getMinutes())}`);
-
-  const activeSurprises = getActiveSurprises(surprises, now);
-  const item =
-    getSpecialSlotItem(now) ||
-    getSpecialDayItem(now) ||
-    getItemFromUrl(activeSurprises) ||
-    (() => {
-        const p = pickHourlyWeightedNoRepeat(activeSurprises, now, SALT);
-        if (p?.key) saveToHistory(p.key);
-        return p;
-    })();
-
-  if (isDev()) {
-    const slot = getSpecialSlotDebug(now);
-    console.log("DEV slot actif:", slot ? slot.key : "aucun");
-    if (!item || !item.key) console.warn("⚠️ Surprise sans key :", item);
-  }
-
-  renderPage(item, now);
+function getHourKey(now, salt) {
+  return hourSeedKey(now, salt);
 }
 
-init();
+function getCachedPickKey(now, salt) {
+  return localStorage.getItem(PICK_CACHE_PREFIX + getHourKey(now, salt));
+}
+
+function setCachedPickKey(now, salt, key) {
+  if (!key) return;
+  localStorage.setItem(PICK_CACHE_PREFIX + getHourKey(now, salt), key);
+}
+
+function findByKey(list, key) {
+  if (!key) return null;
+  return list.find(it => it && it.key === key) || null;
+}
+
+function saveToHistoryOncePerHour(now, salt, key) {
+  if (!key) return;
+  const hk = getHourKey(now, salt);
+  const last = localStorage.getItem(HISTORY_HOUR_KEY);
+  if (last === hk) return; // déjà compté pour cette heure
+  localStorage.setItem(HISTORY_HOUR_KEY, hk);
+  saveToHistory(key);
+}
 
 /* ==========================================================
-   3) SELECTION
+   2) SELECTION
 ========================================================== */
 
 // ---- Weighted + No-repeat (stable per hour) ----
 const TYPE_WEIGHTS = {
-    "message": 6,
+    "message": 4,
     "useless-fact": 2,
     "animal-emoji": 1,
     "random-thought": 1,
@@ -1164,9 +1162,9 @@ const TYPE_WEIGHTS = {
     "countdown": 0.5,
     "image": 3,
     "link": 1,
-    "self-aware": 0.8,
-    "night-whisper": 0.8,
-    "404": 0.3,
+    "self-aware": 0.5,
+    "night-whisper": 0.5,
+    "404": 0.2,
     "letter": 2,
     "quote": 1
 };
@@ -1260,7 +1258,7 @@ function getHourlyItem(list, now, salt) {
 }
 
 /* ==========================================================
-   4) RENDER
+   3) RENDER
 ========================================================== */
 
 function renderPage(item, now) {
@@ -1283,7 +1281,8 @@ function renderPage(item, now) {
       `now: ${formatDDMMYYYY(now)} ${pad2(now.getHours())}:${pad2(now.getMinutes())}`,
       item?.key ? `item: ${item.key}` : "item: (no key)",
       slot?.key ? `slot: ${slot.key}` : "slot: (none)",
-      `history: ${getHistory().length}/${HISTORY_SIZE}`
+      `history: ${getHistory().length}/${HISTORY_SIZE}`,
+      `hourKey: ${getHourKey(now, SALT)}`
     ]);
   }
 
@@ -1424,7 +1423,7 @@ function renderItem(item, content, now) {
 }
 
 /* ==========================================================
-   5) TYPES (renders)
+   4) TYPES (renders)
 ========================================================== */
 
 function renderQuiz(quizItem, mountEl) {
@@ -1509,15 +1508,22 @@ function renderMagic8(item, content) {
 
 function renderFortune(item, content) {
   const values = item.values || [];
+  if (!values.length) return;
+
   content.innerHTML = `
     <p class="msg">Tire une prédiction 😄</p>
-    <button class="btn" type="button" id="ftBtn">Tirer 🔮</button>
-    <p class="msg" id="ftVal" style="margin-top:10px;"></p>
+    <button class="btn" type="button" id="fortuneBtn">Tirer 🔮</button>
+    <p class="msg" id="fortuneText" style="display:none; margin-top:14px;"></p>
   `;
-  const val = content.querySelector("#ftVal");
-  const pick = () => (val.textContent = values[Math.floor(Math.random() * values.length)] || "✨");
-  content.querySelector("#ftBtn").addEventListener("click", pick);
-  pick();
+
+  const btn = content.querySelector("#fortuneBtn");
+  const text = content.querySelector("#fortuneText");
+
+  btn.addEventListener("click", () => {
+      const pick = values[Math.floor(Math.random() * values.length)];
+      text.textContent = pick;
+      text.style.display = "block"; // 👈 apparaît au 1er clic
+  });
 }
 
 function renderChoice(item, content) {
@@ -1647,7 +1653,7 @@ function renderCountdown(item, content) {
 }
 
 /* ==========================================================
-   6) SPECIAL DAYS / SLOTS
+   5) SPECIAL DAYS / SLOTS
 ========================================================== */
 
 function getSpecialDayItem(date) {
@@ -1740,7 +1746,7 @@ function renderTeleport(item, content) {
 }
 
 /* ==========================================================
-   7) URL / DATE HELPERS
+   6) URL / DATE HELPERS
 ========================================================== */
 
 function getIndexFromUrl(n) {
@@ -1830,7 +1836,7 @@ function isActiveTimed(item, now) {
 }
 
 /* ==========================================================
-   8) TIME WINDOW HELPERS
+   7) TIME WINDOW HELPERS
 ========================================================== */
 
 function formatDDMMYYYY(date) {
@@ -1856,7 +1862,7 @@ function inOptionalWindow(nowMin, startMin, endMin) {
 }
 
 /* ==========================================================
-   9) HOURLY INDEX (seeded)
+   8) HOURLY INDEX (seeded)
 ========================================================== */
 
 // Hash simple et stable (FNV-1a 32-bit) : string -> number
@@ -1930,7 +1936,7 @@ function getHourlyIndex(n, date, salt) {
 }
 
 /* ==========================================================
-   10) SMALL HELPERS
+   9) SMALL HELPERS
 ========================================================== */
 
 function escapeHtml(str){
@@ -1974,6 +1980,45 @@ function getRibbonText(item, effectiveDate) {
 
   return "Pour Lily 💖";
 }
+
+/* ==========================================================
+ 11) INIT
+========================================================== */
+
+function init() {
+    const now = getNow();
+    ensureDevBanner();
+    console.log(formatDDMMYYYY(now), `${pad2(now.getHours())}:${pad2(now.getMinutes())}`);
+
+    const activeSurprises = getActiveSurprises(surprises, now);
+    const item =
+    getSpecialSlotItem(now) ||
+    getSpecialDayItem(now) ||
+    getItemFromUrl(activeSurprises) ||
+    (() => {
+      // ✅ Stable au reload : si on a déjà choisi pour cette heure, on réutilise
+      const cachedKey = getCachedPickKey(now, SALT);
+      const cached = findByKey(activeSurprises, cachedKey);
+      if (cached) return cached;
+
+      const p = pickHourlyWeightedNoRepeat(activeSurprises, now, SALT);
+      if (p?.key) {
+        setCachedPickKey(now, SALT, p.key);
+        saveToHistoryOncePerHour(now, SALT, p.key);
+      }
+      return p;
+    })();
+
+    if (isDev()) {
+    const slot = getSpecialSlotDebug(now);
+    console.log("DEV slot actif:", slot ? slot.key : "aucun");
+    if (!item || !item.key) console.warn("⚠️ Surprise sans key :", item);
+    }
+
+    renderPage(item, now);
+}
+
+init();
 </script>
 </body>
 </html>
