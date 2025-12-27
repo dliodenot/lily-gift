@@ -1012,12 +1012,6 @@ const SURPRISES_FUN = [
       "Le silence aussi a des choses à dire.",
       "Une bonne journée commence parfois par une idée rigolote.",
       "Et si aujourd’hui était une bonne journée sans raison particulière ?",
-
-      // 🎯 Très simples
-      "Cette pensée n’a aucun but précis. Et c’est très bien.",
-      "Quelqu’un, quelque part, est en train de sourire.",
-      "Il n’y avait rien à comprendre ici.",
-      "Cette phrase existe juste pour exister."
     ]
   },
   {
@@ -1034,7 +1028,7 @@ const SURPRISES_FUN = [
 const SURPRISES_MEDIA = [
   { key: "media-1", type: "image", title:"Image surprise 🖼️", value: "https://cataas.com/cat/?width=500&height=420" },
   { key: "media-2", type: "image", title:"Chat ch'est une surprise 😸", value: "https://cataas.com/cat/cute?width=500&height=420" },
-  { key: "media-3", type: "image", title:"Chat ch'est une surprise 😸", value: "https://cataas.com/cat/says/Joyeux noël !!?width=500&height=420" },
+  { key: "media-3", type: "image", title:"Chat ch'est une surprise 😸", value: "https://cataas.com/cat/says/Coucou Lily!?width=500&height=420" },
   //{ type: "image", title: "Image surprise 🖼️", value: "https://picsum.photos/500/420" },
   { key: "media-4", type: "link", title: "À écouter 🎵", label: "Ouvrir la musique", value: "https://music.apple.com/fr/album/melodrama/1840188173?i=1840188177" },
   { key: "media-5", type: "link", title: "Petit moment 📺", label: "Ouvrir la vidéo", value: "https://www.youtube.com/watch?v=fCWvZisydrE" }
@@ -1165,7 +1159,7 @@ function saveToHistoryOncePerHour(now, salt, key) {
 // ---- Weighted + No-repeat (stable per hour) ----
 const TYPE_WEIGHTS = {
     "message": 4,
-    "useless-fact": 2,
+    "useless-fact": 1,
     "animal-emoji": 1,
     "random-thought": 1,
     "choice": 2,
@@ -1174,16 +1168,18 @@ const TYPE_WEIGHTS = {
     "evolving-message": 3,
     "fortune": 2,
     "teleport": 2,
-    "xmas": 1,
-    "countdown": 0.5,
+    "xmas": 0,
+    "countdown": 0,
     "image": 3,
     "link": 1,
-    "self-aware": 0.5,
-    "night-whisper": 0.5,
-    "404": 0.2,
+    "self-aware": 0.1,
+    "night-whisper": 0,
+    "404": 0.1,
     "letter": 2,
-    "quote": 1,
-    "story": 1
+    "quote": 0,
+    "story": 1,
+    "glitch": 0.2,
+    "disco": 0.2
 };
 
 function weightOf(item) {
@@ -1285,6 +1281,8 @@ function renderPage(item, now) {
 
   if (item && typeof item.theme === "string") {
     document.body.classList.add(item.theme);
+  } else {
+      document.body.classList.add("xmas");
   }
 
   const ribbonEl = document.getElementById("ribbon");
