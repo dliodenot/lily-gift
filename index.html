@@ -536,6 +536,18 @@ const specialSlots = [
     }
   },
   {
+    key: "slot-2026-01-15-music",
+    date: "15-01-2026",
+    item: {
+      key: "slot-media-6",
+      type: "link",
+      title: "J’ai un truc pour toi 😊",
+      label: "Lancer la musique 🎧",
+      message: "J'ai fait une playlist pour toi 🎵<br>J'ai choisi des chansons qui me font penser à toi ❤️",
+      value: "https://music.apple.com/fr/playlist/l-m/pl.u-gxblk3mIbArWrzv"
+    }
+  },
+  {
     key: "slot-2026-04-16-birthday",
     date: "16-04-2026",
     item: {
@@ -1324,7 +1336,7 @@ function renderItem(item, content, now) {
 
     case "link":
       content.innerHTML = `
-        <p class="msg">J’ai un truc pour toi 😄</p>
+        <p class="msg">${item.message || "J’ai un truc pour toi 😄"}</p>
         <a class="btn" href="${item.value}" target="_blank" rel="noopener">${escapeHtml(item.label || "Ouvrir")}</a>
       `;
       return;
